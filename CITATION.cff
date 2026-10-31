@@ -1,0 +1,731 @@
+cff-version: 1.2.0
+message: If you use this app, please cite it and the works it builds on, listed under references.
+type: software
+title: bulk-de
+abstract: Differential expression between groups of bulk RNA-seq samples with PyDESeq2 (DESeq2's negative binomial model)
+  for an additive design of sample-sheet columns, with shrunk fold changes, a PCA of variance-stabilised counts, volcano and
+  MA plots, and preranked GSEA on MSigDB Hallmark and GO biological process gene sets. Reads rnaseq-quant output or deposited
+  count tables (featureCounts, RSEM, htseq-count, STAR, genes x samples CSV/TSV/XLSX) with a sample sheet or SPARC metadata.
+authors:
+- name: Pennsieve (University of Pennsylvania)
+repository-code: https://github.com/pennsieve-apps/bulk-de
+license: Apache-2.0
+version: 0.1.0
+keywords:
+- bulk-rna-seq
+- transcriptomics
+- differential-expression
+- gene-set-enrichment
+- DESeq2
+- GSEA
+references:
+- type: article
+  title: 'PyDESeq2: a python package for bulk RNA-seq differential expression analysis'
+  authors:
+  - family-names: Muzellec
+    given-names: Boris
+  - family-names: Teleńczuk
+    given-names: Maria
+  - family-names: Cabeli
+    given-names: Vincent
+  - family-names: Andreux
+    given-names: Mathieu
+  year: 2023
+  journal: Bioinformatics
+  volume: 39
+  issue: '9'
+  start: btad547
+  doi: 10.1093/bioinformatics/btad547
+  identifiers:
+  - type: other
+    value: PMID:37669147
+    description: PubMed ID
+- type: article
+  title: Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2
+  authors:
+  - family-names: Love
+    given-names: Michael I
+  - family-names: Huber
+    given-names: Wolfgang
+  - family-names: Anders
+    given-names: Simon
+  year: 2014
+  journal: Genome Biology
+  volume: 15
+  issue: '12'
+  start: '550'
+  doi: 10.1186/s13059-014-0550-8
+  identifiers:
+  - type: other
+    value: PMID:25516281
+    description: PubMed ID
+- type: article
+  title: 'Heavy-tailed prior distributions for sequence count data: removing the noise and preserving large differences'
+  authors:
+  - family-names: Zhu
+    given-names: Anqi
+  - family-names: Ibrahim
+    given-names: Joseph G
+  - family-names: Love
+    given-names: Michael I
+  year: 2019
+  journal: Bioinformatics
+  volume: 35
+  issue: '12'
+  start: '2084'
+  end: '2092'
+  doi: 10.1093/bioinformatics/bty895
+  identifiers:
+  - type: other
+    value: PMID:30395178
+    description: PubMed ID
+- type: article
+  title: Differential expression analysis for sequence count data
+  authors:
+  - family-names: Anders
+    given-names: Simon
+  - family-names: Huber
+    given-names: Wolfgang
+  year: 2010
+  journal: Genome Biology
+  volume: 11
+  issue: '10'
+  start: R106
+  doi: 10.1186/gb-2010-11-10-r106
+  identifiers:
+  - type: other
+    value: PMID:20979621
+    description: PubMed ID
+- type: article
+  title: 'Controlling the False Discovery Rate: A Practical and Powerful Approach to Multiple Testing'
+  authors:
+  - family-names: Benjamini
+    given-names: Yoav
+  - family-names: Hochberg
+    given-names: Yosef
+  year: 1995
+  journal: 'Journal of the Royal Statistical Society Series B: Statistical Methodology'
+  volume: 57
+  issue: '1'
+  start: '289'
+  end: '300'
+  doi: 10.1111/j.2517-6161.1995.tb02031.x
+- type: article
+  title: 'Gene set enrichment analysis: A knowledge-based approach for interpreting genome-wide expression profiles'
+  authors:
+  - family-names: Subramanian
+    given-names: Aravind
+  - family-names: Tamayo
+    given-names: Pablo
+  - family-names: Mootha
+    given-names: Vamsi K.
+  - family-names: Mukherjee
+    given-names: Sayan
+  - family-names: Ebert
+    given-names: Benjamin L.
+  - family-names: Gillette
+    given-names: Michael A.
+  - family-names: Paulovich
+    given-names: Amanda
+  - family-names: Pomeroy
+    given-names: Scott L.
+  - family-names: Golub
+    given-names: Todd R.
+  - family-names: Lander
+    given-names: Eric S.
+  - family-names: Mesirov
+    given-names: Jill P.
+  year: 2005
+  journal: Proceedings of the National Academy of Sciences
+  volume: 102
+  issue: '43'
+  start: '15545'
+  end: '15550'
+  doi: 10.1073/pnas.0506580102
+  identifiers:
+  - type: other
+    value: PMID:16199517
+    description: PubMed ID
+- type: article
+  title: 'GSEApy: a comprehensive package for performing gene set enrichment analysis in Python'
+  authors:
+  - family-names: Fang
+    given-names: Zhuoqing
+  - family-names: Liu
+    given-names: Xinyuan
+  - family-names: Peltz
+    given-names: Gary
+  year: 2023
+  journal: Bioinformatics
+  volume: 39
+  issue: '1'
+  start: btac757
+  doi: 10.1093/bioinformatics/btac757
+  identifiers:
+  - type: other
+    value: PMID:36426870
+    description: PubMed ID
+- type: article
+  title: The Molecular Signatures Database Hallmark Gene Set Collection
+  authors:
+  - family-names: Liberzon
+    given-names: Arthur
+  - family-names: Birger
+    given-names: Chet
+  - family-names: Thorvaldsdóttir
+    given-names: Helga
+  - family-names: Ghandi
+    given-names: Mahmoud
+  - family-names: Mesirov
+    given-names: Jill P.
+  - family-names: Tamayo
+    given-names: Pablo
+  year: 2015
+  journal: Cell Systems
+  volume: 1
+  issue: '6'
+  start: '417'
+  end: '425'
+  doi: 10.1016/j.cels.2015.12.004
+  identifiers:
+  - type: other
+    value: PMID:26771021
+    description: PubMed ID
+- type: article
+  title: Extending support for mouse data in the Molecular Signatures Database (MSigDB)
+  authors:
+  - family-names: Castanza
+    given-names: Anthony S.
+  - family-names: Recla
+    given-names: Jill M.
+  - family-names: Eby
+    given-names: David
+  - family-names: Thorvaldsdóttir
+    given-names: Helga
+  - family-names: Bult
+    given-names: Carol J.
+  - family-names: Mesirov
+    given-names: Jill P.
+  year: 2023
+  journal: Nature Methods
+  volume: 20
+  issue: '11'
+  start: '1619'
+  end: '1620'
+  doi: 10.1038/s41592-023-02014-7
+  identifiers:
+  - type: other
+    value: PMID:37704782
+    description: PubMed ID
+- type: article
+  title: 'Gene Ontology: tool for the unification of biology'
+  authors:
+  - family-names: Ashburner
+    given-names: Michael
+  - family-names: Ball
+    given-names: Catherine A.
+  - family-names: Blake
+    given-names: Judith A.
+  - family-names: Botstein
+    given-names: David
+  - family-names: Butler
+    given-names: Heather
+  - family-names: Cherry
+    given-names: J. Michael
+  - family-names: Davis
+    given-names: Allan P.
+  - family-names: Dolinski
+    given-names: Kara
+  - family-names: Dwight
+    given-names: Selina S.
+  - family-names: Eppig
+    given-names: Janan T.
+  - family-names: Harris
+    given-names: Midori A.
+  - family-names: Hill
+    given-names: David P.
+  - family-names: Issel-Tarver
+    given-names: Laurie
+  - family-names: Kasarskis
+    given-names: Andrew
+  - family-names: Lewis
+    given-names: Suzanna
+  - family-names: Matese
+    given-names: John C.
+  - family-names: Richardson
+    given-names: Joel E.
+  - family-names: Ringwald
+    given-names: Martin
+  - family-names: Rubin
+    given-names: Gerald M.
+  - family-names: Sherlock
+    given-names: Gavin
+  year: 2000
+  journal: Nature Genetics
+  volume: 25
+  issue: '1'
+  start: '25'
+  end: '29'
+  doi: 10.1038/75556
+  identifiers:
+  - type: other
+    value: PMID:10802651
+    description: PubMed ID
+- type: article
+  title: The Gene Ontology knowledgebase in 2023
+  authors:
+  - name: The Gene Ontology Consortium
+  - family-names: Aleksander
+    given-names: Suzi A
+  - family-names: Balhoff
+    given-names: James
+  - family-names: Carbon
+    given-names: Seth
+  - family-names: Cherry
+    given-names: J Michael
+  - family-names: Drabkin
+    given-names: Harold J
+  - family-names: Ebert
+    given-names: Dustin
+  - family-names: Feuermann
+    given-names: Marc
+  - family-names: Gaudet
+    given-names: Pascale
+  - family-names: Harris
+    given-names: Nomi L
+  - family-names: Hill
+    given-names: David P
+  - family-names: Lee
+    given-names: Raymond
+  - family-names: Mi
+    given-names: Huaiyu
+  - family-names: Moxon
+    given-names: Sierra
+  - family-names: Mungall
+    given-names: Christopher J
+  - family-names: Muruganugan
+    given-names: Anushya
+  - family-names: Mushayahama
+    given-names: Tremayne
+  - family-names: Sternberg
+    given-names: Paul W
+  - family-names: Thomas
+    given-names: Paul D
+  - family-names: Van Auken
+    given-names: Kimberly
+  - family-names: Ramsey
+    given-names: Jolene
+  - family-names: Siegele
+    given-names: Deborah A
+  - family-names: Chisholm
+    given-names: Rex L
+  - family-names: Fey
+    given-names: Petra
+  - family-names: Aspromonte
+    given-names: Maria Cristina
+  - family-names: Nugnes
+    given-names: Maria Victoria
+  - family-names: Quaglia
+    given-names: Federica
+  - family-names: Tosatto
+    given-names: Silvio
+  - family-names: Giglio
+    given-names: Michelle
+  - family-names: Nadendla
+    given-names: Suvarna
+  - family-names: Antonazzo
+    given-names: Giulia
+  - family-names: Attrill
+    given-names: Helen
+  - family-names: dos Santos
+    given-names: Gil
+  - family-names: Marygold
+    given-names: Steven
+  - family-names: Strelets
+    given-names: Victor
+  - family-names: Tabone
+    given-names: Christopher J
+  - family-names: Thurmond
+    given-names: Jim
+  - family-names: Zhou
+    given-names: Pinglei
+  - family-names: Ahmed
+    given-names: Saadullah H
+  - family-names: Asanitthong
+    given-names: Praoparn
+  - family-names: Luna Buitrago
+    given-names: Diana
+  - family-names: Erdol
+    given-names: Meltem N
+  - family-names: Gage
+    given-names: Matthew C
+  - family-names: Ali Kadhum
+    given-names: Mohamed
+  - family-names: Li
+    given-names: Kan Yan Chloe
+  - family-names: Long
+    given-names: Miao
+  - family-names: Michalak
+    given-names: Aleksandra
+  - family-names: Pesala
+    given-names: Angeline
+  - family-names: Pritazahra
+    given-names: Armalya
+  - family-names: Saverimuttu
+    given-names: Shirin C C
+  - family-names: Su
+    given-names: Renzhi
+  - family-names: Thurlow
+    given-names: Kate E
+  - family-names: Lovering
+    given-names: Ruth C
+  - family-names: Logie
+    given-names: Colin
+  - family-names: Oliferenko
+    given-names: Snezhana
+  - family-names: Blake
+    given-names: Judith
+  - family-names: Christie
+    given-names: Karen
+  - family-names: Corbani
+    given-names: Lori
+  - family-names: Dolan
+    given-names: Mary E
+  - family-names: Ni
+    given-names: Li
+  - family-names: Sitnikov
+    given-names: Dmitry
+  - family-names: Smith
+    given-names: Cynthia
+  - family-names: Cuzick
+    given-names: Alayne
+  - family-names: Seager
+    given-names: James
+  - family-names: Cooper
+    given-names: Laurel
+  - family-names: Elser
+    given-names: Justin
+  - family-names: Jaiswal
+    given-names: Pankaj
+  - family-names: Gupta
+    given-names: Parul
+  - family-names: Naithani
+    given-names: Sushma
+  - family-names: Lera-Ramirez
+    given-names: Manuel
+  - family-names: Rutherford
+    given-names: Kim
+  - family-names: Wood
+    given-names: Valerie
+  - family-names: De Pons
+    given-names: Jeffrey L
+  - family-names: Dwinell
+    given-names: Melinda R
+  - family-names: Hayman
+    given-names: G Thomas
+  - family-names: Kaldunski
+    given-names: Mary L
+  - family-names: Kwitek
+    given-names: Anne E
+  - family-names: Laulederkind
+    given-names: Stanley J F
+  - family-names: Tutaj
+    given-names: Marek A
+  - family-names: Vedi
+    given-names: Mahima
+  - family-names: Wang
+    given-names: Shur-Jen
+  - family-names: D’Eustachio
+    given-names: Peter
+  - family-names: Aimo
+    given-names: Lucila
+  - family-names: Axelsen
+    given-names: Kristian
+  - family-names: Bridge
+    given-names: Alan
+  - family-names: Hyka-Nouspikel
+    given-names: Nevila
+  - family-names: Morgat
+    given-names: Anne
+  - family-names: Engel
+    given-names: Stacia R
+  - family-names: Karra
+    given-names: Kalpana
+  - family-names: Miyasato
+    given-names: Stuart R
+  - family-names: Nash
+    given-names: Robert S
+  - family-names: Skrzypek
+    given-names: Marek S
+  - family-names: Weng
+    given-names: Shuai
+  - family-names: Wong
+    given-names: Edith D
+  - family-names: Bakker
+    given-names: Erika
+  - family-names: Berardini
+    given-names: Tanya Z
+  - family-names: Reiser
+    given-names: Leonore
+  - family-names: Auchincloss
+    given-names: Andrea
+  - family-names: Argoud-Puy
+    given-names: Ghislaine
+  - family-names: Blatter
+    given-names: Marie-Claude
+  - family-names: Boutet
+    given-names: Emmanuel
+  - family-names: Breuza
+    given-names: Lionel
+  - family-names: Casals-Casas
+    given-names: Cristina
+  - family-names: Coudert
+    given-names: Elisabeth
+  - family-names: Estreicher
+    given-names: Anne
+  - family-names: Livia Famiglietti
+    given-names: Maria
+  - family-names: Gos
+    given-names: Arnaud
+  - family-names: Gruaz-Gumowski
+    given-names: Nadine
+  - family-names: Hulo
+    given-names: Chantal
+  - family-names: Jungo
+    given-names: Florence
+  - family-names: Le Mercier
+    given-names: Philippe
+  - family-names: Lieberherr
+    given-names: Damien
+  - family-names: Masson
+    given-names: Patrick
+  - family-names: Pedruzzi
+    given-names: Ivo
+  - family-names: Pourcel
+    given-names: Lucille
+  - family-names: Poux
+    given-names: Sylvain
+  - family-names: Rivoire
+    given-names: Catherine
+  - family-names: Sundaram
+    given-names: Shyamala
+  - family-names: Bateman
+    given-names: Alex
+  - family-names: Bowler-Barnett
+    given-names: Emily
+  - family-names: Bye-A-Jee
+    given-names: Hema
+  - family-names: Denny
+    given-names: Paul
+  - family-names: Ignatchenko
+    given-names: Alexandr
+  - family-names: Ishtiaq
+    given-names: Rizwan
+  - family-names: Lock
+    given-names: Antonia
+  - family-names: Lussi
+    given-names: Yvonne
+  - family-names: Magrane
+    given-names: Michele
+  - family-names: Martin
+    given-names: Maria J
+  - family-names: Orchard
+    given-names: Sandra
+  - family-names: Raposo
+    given-names: Pedro
+  - family-names: Speretta
+    given-names: Elena
+  - family-names: Tyagi
+    given-names: Nidhi
+  - family-names: Warner
+    given-names: Kate
+  - family-names: Zaru
+    given-names: Rossana
+  - family-names: Diehl
+    given-names: Alexander D
+  - family-names: Chan
+    given-names: Juancarlos
+  - family-names: Diamantakis
+    given-names: Stavros
+  - family-names: Raciti
+    given-names: Daniela
+  - family-names: Zarowiecki
+    given-names: Magdalena
+  - family-names: Fisher
+    given-names: Malcolm
+  - family-names: James-Zorn
+    given-names: Christina
+  - family-names: Ponferrada
+    given-names: Virgilio
+  - family-names: Zorn
+    given-names: Aaron
+  - family-names: Ramachandran
+    given-names: Sridhar
+  - family-names: Ruzicka
+    given-names: Leyla
+  - family-names: Westerfield
+    given-names: Monte
+  year: 2023
+  journal: GENETICS
+  volume: 224
+  issue: '1'
+  start: iyad031
+  doi: 10.1093/genetics/iyad031
+  identifiers:
+  - type: other
+    value: PMID:36866529
+    description: PubMed ID
+- type: article
+  title: 'RNA-Seq workflow: gene-level exploratory analysis and differential expression'
+  authors:
+  - family-names: Love
+    given-names: Michael I.
+  - family-names: Anders
+    given-names: Simon
+  - family-names: Kim
+    given-names: Vladislav
+  - family-names: Huber
+    given-names: Wolfgang
+  year: 2015
+  journal: F1000Research
+  volume: 4
+  start: '1070'
+  doi: 10.12688/f1000research.7035.1
+  identifiers:
+  - type: other
+    value: PMID:26674615
+    description: PubMed ID
+- type: article
+  title: A survey of best practices for RNA-seq data analysis
+  authors:
+  - family-names: Conesa
+    given-names: Ana
+  - family-names: Madrigal
+    given-names: Pedro
+  - family-names: Tarazona
+    given-names: Sonia
+  - family-names: Gomez-Cabrero
+    given-names: David
+  - family-names: Cervera
+    given-names: Alejandra
+  - family-names: McPherson
+    given-names: Andrew
+  - family-names: Szcześniak
+    given-names: Michał Wojciech
+  - family-names: Gaffney
+    given-names: Daniel J.
+  - family-names: Elo
+    given-names: Laura L.
+  - family-names: Zhang
+    given-names: Xuegong
+  - family-names: Mortazavi
+    given-names: Ali
+  year: 2016
+  journal: Genome Biology
+  volume: 17
+  issue: '1'
+  start: '13'
+  doi: 10.1186/s13059-016-0881-8
+  identifiers:
+  - type: other
+    value: PMID:26813401
+    description: PubMed ID
+- type: data
+  title: Sex-dependent differences in the genomic profile of lingual sensory neurons in naive and tongue-tumor bearing mice
+  authors:
+  - family-names: Tumanov
+    given-names: Alexei V
+    orcid: https://orcid.org/0000-0001-6042-0152
+  - family-names: Shein
+    given-names: Sergey A
+    orcid: https://orcid.org/0000-0003-0258-425X
+  - family-names: Lai
+    given-names: Zhao
+  - family-names: Chen
+    given-names: Yidong
+    orcid: https://orcid.org/0000-0001-6806-2185
+  - family-names: Ruparel
+    given-names: Shivani B
+    orcid: https://orcid.org/0000-0002-8232-3780
+  year: 2025
+  publisher:
+    name: SPARC Portal
+  doi: 10.26275/gaap-zlpj
+  license: CC-BY-4.0
+  url: https://sparc.science/datasets/427
+  notes: 'Demo data. Described in: Ibrahim T, Wu P, Wang LJ, et al. Sex-dependent differences in the genomic profile of lingual
+    sensory neurons in naïve and tongue-tumor bearing mice. Sci Rep 2023;13:13117. doi:10.1038/s41598-023-40380-6'
+- type: article
+  title: Sex-dependent differences in the genomic profile of lingual sensory neurons in naïve and tongue-tumor bearing mice
+  authors:
+  - family-names: Ibrahim
+    given-names: Tarek
+  - family-names: Wu
+    given-names: Ping
+  - family-names: Wang
+    given-names: Li-Ju
+  - family-names: Fang-Mei
+    given-names: Chang
+  - family-names: Murillo
+    given-names: Josue
+  - family-names: Merlo
+    given-names: Jaclyn
+  - family-names: Shein
+    given-names: Sergey S.
+  - family-names: Tumanov
+    given-names: Alexei V.
+  - family-names: Lai
+    given-names: Zhao
+  - family-names: Weldon
+    given-names: Korri
+  - family-names: Chen
+    given-names: Yidong
+  - family-names: Ruparel
+    given-names: Shivani
+  year: 2023
+  journal: Scientific Reports
+  volume: 13
+  issue: '1'
+  start: '13117'
+  doi: 10.1038/s41598-023-40380-6
+  identifiers:
+  - type: other
+    value: PMID:37573456
+    description: PubMed ID
+- type: data
+  title: Cross-platform transcriptomic data integration of human osteoarthritis synovium
+  authors:
+  - family-names: Newton
+    given-names: Michael D
+    orcid: https://orcid.org/0000-0003-1262-0613
+  - family-names: Swahn
+    given-names: Hannah
+    orcid: https://orcid.org/0000-0001-7815-2387
+  - family-names: Orange
+    given-names: Dana
+    orcid: https://orcid.org/0000-0001-9859-7199
+  - family-names: Lesnak
+    given-names: Joseph B
+    orcid: https://orcid.org/0000-0002-4098-9090
+  - family-names: Price
+    given-names: Theodore J
+    orcid: https://orcid.org/0000-0002-6971-6221
+  - family-names: Malfait
+    given-names: Anne-Marie
+    orcid: https://orcid.org/0000-0003-1428-0384
+  - family-names: Miller
+    given-names: Rachel E
+    orcid: https://orcid.org/0000-0002-4486-5757
+  - family-names: Lotz
+    given-names: Martin K
+    orcid: https://orcid.org/0000-0002-6299-8799
+  - family-names: Maerz
+    given-names: Tristan
+    orcid: https://orcid.org/0000-0002-4523-6012
+  year: 2025
+  publisher:
+    name: SPARC Portal
+  doi: 10.26275/robc-8zol
+  license: CC-BY-4.0
+  url: https://sparc.science/datasets/457
+  notes: 'Test data: a deposited genes x samples count workbook.'

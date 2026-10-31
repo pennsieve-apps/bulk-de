@@ -1,0 +1,1278 @@
+{
+ "pydeseq2": {
+  "doi": "10.1093/bioinformatics/btad547",
+  "source": "crossref",
+  "title": "PyDESeq2: a python package for bulk RNA-seq differential expression analysis",
+  "authors": [
+   {
+    "family": "Muzellec",
+    "given": "Boris"
+   },
+   {
+    "family": "Teleńczuk",
+    "given": "Maria"
+   },
+   {
+    "family": "Cabeli",
+    "given": "Vincent"
+   },
+   {
+    "family": "Andreux",
+    "given": "Mathieu"
+   }
+  ],
+  "journal": "Bioinformatics",
+  "journal_short": "Bioinformatics",
+  "year": 2023,
+  "volume": "39",
+  "issue": "9",
+  "pages": "btad547",
+  "type": "article",
+  "short_authors": "Muzellec B, Teleńczuk M, Cabeli V, Andreux M",
+  "pmid": "37669147",
+  "checked": "2026-10-31"
+ },
+ "deseq2": {
+  "doi": "10.1186/s13059-014-0550-8",
+  "source": "crossref",
+  "title": "Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2",
+  "authors": [
+   {
+    "family": "Love",
+    "given": "Michael I"
+   },
+   {
+    "family": "Huber",
+    "given": "Wolfgang"
+   },
+   {
+    "family": "Anders",
+    "given": "Simon"
+   }
+  ],
+  "journal": "Genome Biology",
+  "journal_short": "Genome Biol",
+  "year": 2014,
+  "volume": "15",
+  "issue": "12",
+  "pages": "550",
+  "type": "article",
+  "short_authors": "Love MI, Huber W, Anders S",
+  "pmid": "25516281",
+  "checked": "2026-10-31"
+ },
+ "apeglm": {
+  "doi": "10.1093/bioinformatics/bty895",
+  "source": "crossref",
+  "title": "Heavy-tailed prior distributions for sequence count data: removing the noise and preserving large differences",
+  "authors": [
+   {
+    "family": "Zhu",
+    "given": "Anqi"
+   },
+   {
+    "family": "Ibrahim",
+    "given": "Joseph G"
+   },
+   {
+    "family": "Love",
+    "given": "Michael I"
+   }
+  ],
+  "journal": "Bioinformatics",
+  "journal_short": "Bioinformatics",
+  "year": 2019,
+  "volume": "35",
+  "issue": "12",
+  "pages": "2084-2092",
+  "type": "article",
+  "short_authors": "Zhu A, Ibrahim JG, Love MI",
+  "pmid": "30395178",
+  "checked": "2026-10-31"
+ },
+ "vst": {
+  "doi": "10.1186/gb-2010-11-10-r106",
+  "source": "crossref",
+  "title": "Differential expression analysis for sequence count data",
+  "authors": [
+   {
+    "family": "Anders",
+    "given": "Simon"
+   },
+   {
+    "family": "Huber",
+    "given": "Wolfgang"
+   }
+  ],
+  "journal": "Genome Biology",
+  "journal_short": "Genome Biol",
+  "year": 2010,
+  "volume": "11",
+  "issue": "10",
+  "pages": "R106",
+  "type": "article",
+  "short_authors": "Anders S, Huber W",
+  "pmid": "20979621",
+  "checked": "2026-10-31"
+ },
+ "bh": {
+  "doi": "10.1111/j.2517-6161.1995.tb02031.x",
+  "source": "crossref",
+  "title": "Controlling the False Discovery Rate: A Practical and Powerful Approach to Multiple Testing",
+  "authors": [
+   {
+    "family": "Benjamini",
+    "given": "Yoav"
+   },
+   {
+    "family": "Hochberg",
+    "given": "Yosef"
+   }
+  ],
+  "journal": "Journal of the Royal Statistical Society Series B: Statistical Methodology",
+  "journal_short": "J R Stat Soc Series B",
+  "year": 1995,
+  "volume": "57",
+  "issue": "1",
+  "pages": "289-300",
+  "type": "article",
+  "short_authors": "Benjamini Y, Hochberg Y",
+  "pmid": "",
+  "checked": "2026-10-31"
+ },
+ "gsea": {
+  "doi": "10.1073/pnas.0506580102",
+  "source": "crossref",
+  "title": "Gene set enrichment analysis: A knowledge-based approach for interpreting genome-wide expression profiles",
+  "authors": [
+   {
+    "family": "Subramanian",
+    "given": "Aravind"
+   },
+   {
+    "family": "Tamayo",
+    "given": "Pablo"
+   },
+   {
+    "family": "Mootha",
+    "given": "Vamsi K."
+   },
+   {
+    "family": "Mukherjee",
+    "given": "Sayan"
+   },
+   {
+    "family": "Ebert",
+    "given": "Benjamin L."
+   },
+   {
+    "family": "Gillette",
+    "given": "Michael A."
+   },
+   {
+    "family": "Paulovich",
+    "given": "Amanda"
+   },
+   {
+    "family": "Pomeroy",
+    "given": "Scott L."
+   },
+   {
+    "family": "Golub",
+    "given": "Todd R."
+   },
+   {
+    "family": "Lander",
+    "given": "Eric S."
+   },
+   {
+    "family": "Mesirov",
+    "given": "Jill P."
+   }
+  ],
+  "journal": "Proceedings of the National Academy of Sciences",
+  "journal_short": "Proc Natl Acad Sci U S A",
+  "year": 2005,
+  "volume": "102",
+  "issue": "43",
+  "pages": "15545-15550",
+  "type": "article",
+  "short_authors": "Subramanian A, Tamayo P, Mootha VK, et al",
+  "pmid": "16199517",
+  "checked": "2026-10-31"
+ },
+ "gseapy": {
+  "doi": "10.1093/bioinformatics/btac757",
+  "source": "crossref",
+  "title": "GSEApy: a comprehensive package for performing gene set enrichment analysis in Python",
+  "authors": [
+   {
+    "family": "Fang",
+    "given": "Zhuoqing"
+   },
+   {
+    "family": "Liu",
+    "given": "Xinyuan"
+   },
+   {
+    "family": "Peltz",
+    "given": "Gary"
+   }
+  ],
+  "journal": "Bioinformatics",
+  "journal_short": "Bioinformatics",
+  "year": 2023,
+  "volume": "39",
+  "issue": "1",
+  "pages": "btac757",
+  "type": "article",
+  "short_authors": "Fang Z, Liu X, Peltz G",
+  "pmid": "36426870",
+  "checked": "2026-10-31"
+ },
+ "msigdb_hallmark": {
+  "doi": "10.1016/j.cels.2015.12.004",
+  "source": "crossref",
+  "title": "The Molecular Signatures Database Hallmark Gene Set Collection",
+  "authors": [
+   {
+    "family": "Liberzon",
+    "given": "Arthur"
+   },
+   {
+    "family": "Birger",
+    "given": "Chet"
+   },
+   {
+    "family": "Thorvaldsdóttir",
+    "given": "Helga"
+   },
+   {
+    "family": "Ghandi",
+    "given": "Mahmoud"
+   },
+   {
+    "family": "Mesirov",
+    "given": "Jill P."
+   },
+   {
+    "family": "Tamayo",
+    "given": "Pablo"
+   }
+  ],
+  "journal": "Cell Systems",
+  "journal_short": "Cell Syst",
+  "year": 2015,
+  "volume": "1",
+  "issue": "6",
+  "pages": "417-425",
+  "type": "article",
+  "short_authors": "Liberzon A, Birger C, Thorvaldsdóttir H, Ghandi M, Mesirov JP, Tamayo P",
+  "pmid": "26771021",
+  "checked": "2026-10-31"
+ },
+ "msigdb_mouse": {
+  "doi": "10.1038/s41592-023-02014-7",
+  "source": "crossref",
+  "title": "Extending support for mouse data in the Molecular Signatures Database (MSigDB)",
+  "authors": [
+   {
+    "family": "Castanza",
+    "given": "Anthony S."
+   },
+   {
+    "family": "Recla",
+    "given": "Jill M."
+   },
+   {
+    "family": "Eby",
+    "given": "David"
+   },
+   {
+    "family": "Thorvaldsdóttir",
+    "given": "Helga"
+   },
+   {
+    "family": "Bult",
+    "given": "Carol J."
+   },
+   {
+    "family": "Mesirov",
+    "given": "Jill P."
+   }
+  ],
+  "journal": "Nature Methods",
+  "journal_short": "Nat Methods",
+  "year": 2023,
+  "volume": "20",
+  "issue": "11",
+  "pages": "1619-1620",
+  "type": "article",
+  "short_authors": "Castanza AS, Recla JM, Eby D, Thorvaldsdóttir H, Bult CJ, Mesirov JP",
+  "pmid": "37704782",
+  "checked": "2026-10-31"
+ },
+ "go": {
+  "doi": "10.1038/75556",
+  "source": "crossref",
+  "title": "Gene Ontology: tool for the unification of biology",
+  "authors": [
+   {
+    "family": "Ashburner",
+    "given": "Michael"
+   },
+   {
+    "family": "Ball",
+    "given": "Catherine A."
+   },
+   {
+    "family": "Blake",
+    "given": "Judith A."
+   },
+   {
+    "family": "Botstein",
+    "given": "David"
+   },
+   {
+    "family": "Butler",
+    "given": "Heather"
+   },
+   {
+    "family": "Cherry",
+    "given": "J. Michael"
+   },
+   {
+    "family": "Davis",
+    "given": "Allan P."
+   },
+   {
+    "family": "Dolinski",
+    "given": "Kara"
+   },
+   {
+    "family": "Dwight",
+    "given": "Selina S."
+   },
+   {
+    "family": "Eppig",
+    "given": "Janan T."
+   },
+   {
+    "family": "Harris",
+    "given": "Midori A."
+   },
+   {
+    "family": "Hill",
+    "given": "David P."
+   },
+   {
+    "family": "Issel-Tarver",
+    "given": "Laurie"
+   },
+   {
+    "family": "Kasarskis",
+    "given": "Andrew"
+   },
+   {
+    "family": "Lewis",
+    "given": "Suzanna"
+   },
+   {
+    "family": "Matese",
+    "given": "John C."
+   },
+   {
+    "family": "Richardson",
+    "given": "Joel E."
+   },
+   {
+    "family": "Ringwald",
+    "given": "Martin"
+   },
+   {
+    "family": "Rubin",
+    "given": "Gerald M."
+   },
+   {
+    "family": "Sherlock",
+    "given": "Gavin"
+   }
+  ],
+  "journal": "Nature Genetics",
+  "journal_short": "Nat Genet",
+  "year": 2000,
+  "volume": "25",
+  "issue": "1",
+  "pages": "25-29",
+  "type": "article",
+  "short_authors": "Ashburner M, Ball CA, Blake JA, et al",
+  "pmid": "10802651",
+  "checked": "2026-10-31"
+ },
+ "go_2023": {
+  "doi": "10.1093/genetics/iyad031",
+  "source": "crossref",
+  "title": "The Gene Ontology knowledgebase in 2023",
+  "authors": [
+   {
+    "family": "The Gene Ontology Consortium",
+    "given": ""
+   },
+   {
+    "family": "Aleksander",
+    "given": "Suzi A"
+   },
+   {
+    "family": "Balhoff",
+    "given": "James"
+   },
+   {
+    "family": "Carbon",
+    "given": "Seth"
+   },
+   {
+    "family": "Cherry",
+    "given": "J Michael"
+   },
+   {
+    "family": "Drabkin",
+    "given": "Harold J"
+   },
+   {
+    "family": "Ebert",
+    "given": "Dustin"
+   },
+   {
+    "family": "Feuermann",
+    "given": "Marc"
+   },
+   {
+    "family": "Gaudet",
+    "given": "Pascale"
+   },
+   {
+    "family": "Harris",
+    "given": "Nomi L"
+   },
+   {
+    "family": "Hill",
+    "given": "David P"
+   },
+   {
+    "family": "Lee",
+    "given": "Raymond"
+   },
+   {
+    "family": "Mi",
+    "given": "Huaiyu"
+   },
+   {
+    "family": "Moxon",
+    "given": "Sierra"
+   },
+   {
+    "family": "Mungall",
+    "given": "Christopher J"
+   },
+   {
+    "family": "Muruganugan",
+    "given": "Anushya"
+   },
+   {
+    "family": "Mushayahama",
+    "given": "Tremayne"
+   },
+   {
+    "family": "Sternberg",
+    "given": "Paul W"
+   },
+   {
+    "family": "Thomas",
+    "given": "Paul D"
+   },
+   {
+    "family": "Van Auken",
+    "given": "Kimberly"
+   },
+   {
+    "family": "Ramsey",
+    "given": "Jolene"
+   },
+   {
+    "family": "Siegele",
+    "given": "Deborah A"
+   },
+   {
+    "family": "Chisholm",
+    "given": "Rex L"
+   },
+   {
+    "family": "Fey",
+    "given": "Petra"
+   },
+   {
+    "family": "Aspromonte",
+    "given": "Maria Cristina"
+   },
+   {
+    "family": "Nugnes",
+    "given": "Maria Victoria"
+   },
+   {
+    "family": "Quaglia",
+    "given": "Federica"
+   },
+   {
+    "family": "Tosatto",
+    "given": "Silvio"
+   },
+   {
+    "family": "Giglio",
+    "given": "Michelle"
+   },
+   {
+    "family": "Nadendla",
+    "given": "Suvarna"
+   },
+   {
+    "family": "Antonazzo",
+    "given": "Giulia"
+   },
+   {
+    "family": "Attrill",
+    "given": "Helen"
+   },
+   {
+    "family": "dos Santos",
+    "given": "Gil"
+   },
+   {
+    "family": "Marygold",
+    "given": "Steven"
+   },
+   {
+    "family": "Strelets",
+    "given": "Victor"
+   },
+   {
+    "family": "Tabone",
+    "given": "Christopher J"
+   },
+   {
+    "family": "Thurmond",
+    "given": "Jim"
+   },
+   {
+    "family": "Zhou",
+    "given": "Pinglei"
+   },
+   {
+    "family": "Ahmed",
+    "given": "Saadullah H"
+   },
+   {
+    "family": "Asanitthong",
+    "given": "Praoparn"
+   },
+   {
+    "family": "Luna Buitrago",
+    "given": "Diana"
+   },
+   {
+    "family": "Erdol",
+    "given": "Meltem N"
+   },
+   {
+    "family": "Gage",
+    "given": "Matthew C"
+   },
+   {
+    "family": "Ali Kadhum",
+    "given": "Mohamed"
+   },
+   {
+    "family": "Li",
+    "given": "Kan Yan Chloe"
+   },
+   {
+    "family": "Long",
+    "given": "Miao"
+   },
+   {
+    "family": "Michalak",
+    "given": "Aleksandra"
+   },
+   {
+    "family": "Pesala",
+    "given": "Angeline"
+   },
+   {
+    "family": "Pritazahra",
+    "given": "Armalya"
+   },
+   {
+    "family": "Saverimuttu",
+    "given": "Shirin C C"
+   },
+   {
+    "family": "Su",
+    "given": "Renzhi"
+   },
+   {
+    "family": "Thurlow",
+    "given": "Kate E"
+   },
+   {
+    "family": "Lovering",
+    "given": "Ruth C"
+   },
+   {
+    "family": "Logie",
+    "given": "Colin"
+   },
+   {
+    "family": "Oliferenko",
+    "given": "Snezhana"
+   },
+   {
+    "family": "Blake",
+    "given": "Judith"
+   },
+   {
+    "family": "Christie",
+    "given": "Karen"
+   },
+   {
+    "family": "Corbani",
+    "given": "Lori"
+   },
+   {
+    "family": "Dolan",
+    "given": "Mary E"
+   },
+   {
+    "family": "Ni",
+    "given": "Li"
+   },
+   {
+    "family": "Sitnikov",
+    "given": "Dmitry"
+   },
+   {
+    "family": "Smith",
+    "given": "Cynthia"
+   },
+   {
+    "family": "Cuzick",
+    "given": "Alayne"
+   },
+   {
+    "family": "Seager",
+    "given": "James"
+   },
+   {
+    "family": "Cooper",
+    "given": "Laurel"
+   },
+   {
+    "family": "Elser",
+    "given": "Justin"
+   },
+   {
+    "family": "Jaiswal",
+    "given": "Pankaj"
+   },
+   {
+    "family": "Gupta",
+    "given": "Parul"
+   },
+   {
+    "family": "Naithani",
+    "given": "Sushma"
+   },
+   {
+    "family": "Lera-Ramirez",
+    "given": "Manuel"
+   },
+   {
+    "family": "Rutherford",
+    "given": "Kim"
+   },
+   {
+    "family": "Wood",
+    "given": "Valerie"
+   },
+   {
+    "family": "De Pons",
+    "given": "Jeffrey L"
+   },
+   {
+    "family": "Dwinell",
+    "given": "Melinda R"
+   },
+   {
+    "family": "Hayman",
+    "given": "G Thomas"
+   },
+   {
+    "family": "Kaldunski",
+    "given": "Mary L"
+   },
+   {
+    "family": "Kwitek",
+    "given": "Anne E"
+   },
+   {
+    "family": "Laulederkind",
+    "given": "Stanley J F"
+   },
+   {
+    "family": "Tutaj",
+    "given": "Marek A"
+   },
+   {
+    "family": "Vedi",
+    "given": "Mahima"
+   },
+   {
+    "family": "Wang",
+    "given": "Shur-Jen"
+   },
+   {
+    "family": "D’Eustachio",
+    "given": "Peter"
+   },
+   {
+    "family": "Aimo",
+    "given": "Lucila"
+   },
+   {
+    "family": "Axelsen",
+    "given": "Kristian"
+   },
+   {
+    "family": "Bridge",
+    "given": "Alan"
+   },
+   {
+    "family": "Hyka-Nouspikel",
+    "given": "Nevila"
+   },
+   {
+    "family": "Morgat",
+    "given": "Anne"
+   },
+   {
+    "family": "Engel",
+    "given": "Stacia R"
+   },
+   {
+    "family": "Karra",
+    "given": "Kalpana"
+   },
+   {
+    "family": "Miyasato",
+    "given": "Stuart R"
+   },
+   {
+    "family": "Nash",
+    "given": "Robert S"
+   },
+   {
+    "family": "Skrzypek",
+    "given": "Marek S"
+   },
+   {
+    "family": "Weng",
+    "given": "Shuai"
+   },
+   {
+    "family": "Wong",
+    "given": "Edith D"
+   },
+   {
+    "family": "Bakker",
+    "given": "Erika"
+   },
+   {
+    "family": "Berardini",
+    "given": "Tanya Z"
+   },
+   {
+    "family": "Reiser",
+    "given": "Leonore"
+   },
+   {
+    "family": "Auchincloss",
+    "given": "Andrea"
+   },
+   {
+    "family": "Argoud-Puy",
+    "given": "Ghislaine"
+   },
+   {
+    "family": "Blatter",
+    "given": "Marie-Claude"
+   },
+   {
+    "family": "Boutet",
+    "given": "Emmanuel"
+   },
+   {
+    "family": "Breuza",
+    "given": "Lionel"
+   },
+   {
+    "family": "Casals-Casas",
+    "given": "Cristina"
+   },
+   {
+    "family": "Coudert",
+    "given": "Elisabeth"
+   },
+   {
+    "family": "Estreicher",
+    "given": "Anne"
+   },
+   {
+    "family": "Livia Famiglietti",
+    "given": "Maria"
+   },
+   {
+    "family": "Gos",
+    "given": "Arnaud"
+   },
+   {
+    "family": "Gruaz-Gumowski",
+    "given": "Nadine"
+   },
+   {
+    "family": "Hulo",
+    "given": "Chantal"
+   },
+   {
+    "family": "Jungo",
+    "given": "Florence"
+   },
+   {
+    "family": "Le Mercier",
+    "given": "Philippe"
+   },
+   {
+    "family": "Lieberherr",
+    "given": "Damien"
+   },
+   {
+    "family": "Masson",
+    "given": "Patrick"
+   },
+   {
+    "family": "Pedruzzi",
+    "given": "Ivo"
+   },
+   {
+    "family": "Pourcel",
+    "given": "Lucille"
+   },
+   {
+    "family": "Poux",
+    "given": "Sylvain"
+   },
+   {
+    "family": "Rivoire",
+    "given": "Catherine"
+   },
+   {
+    "family": "Sundaram",
+    "given": "Shyamala"
+   },
+   {
+    "family": "Bateman",
+    "given": "Alex"
+   },
+   {
+    "family": "Bowler-Barnett",
+    "given": "Emily"
+   },
+   {
+    "family": "Bye-A-Jee",
+    "given": "Hema"
+   },
+   {
+    "family": "Denny",
+    "given": "Paul"
+   },
+   {
+    "family": "Ignatchenko",
+    "given": "Alexandr"
+   },
+   {
+    "family": "Ishtiaq",
+    "given": "Rizwan"
+   },
+   {
+    "family": "Lock",
+    "given": "Antonia"
+   },
+   {
+    "family": "Lussi",
+    "given": "Yvonne"
+   },
+   {
+    "family": "Magrane",
+    "given": "Michele"
+   },
+   {
+    "family": "Martin",
+    "given": "Maria J"
+   },
+   {
+    "family": "Orchard",
+    "given": "Sandra"
+   },
+   {
+    "family": "Raposo",
+    "given": "Pedro"
+   },
+   {
+    "family": "Speretta",
+    "given": "Elena"
+   },
+   {
+    "family": "Tyagi",
+    "given": "Nidhi"
+   },
+   {
+    "family": "Warner",
+    "given": "Kate"
+   },
+   {
+    "family": "Zaru",
+    "given": "Rossana"
+   },
+   {
+    "family": "Diehl",
+    "given": "Alexander D"
+   },
+   {
+    "family": "Chan",
+    "given": "Juancarlos"
+   },
+   {
+    "family": "Diamantakis",
+    "given": "Stavros"
+   },
+   {
+    "family": "Raciti",
+    "given": "Daniela"
+   },
+   {
+    "family": "Zarowiecki",
+    "given": "Magdalena"
+   },
+   {
+    "family": "Fisher",
+    "given": "Malcolm"
+   },
+   {
+    "family": "James-Zorn",
+    "given": "Christina"
+   },
+   {
+    "family": "Ponferrada",
+    "given": "Virgilio"
+   },
+   {
+    "family": "Zorn",
+    "given": "Aaron"
+   },
+   {
+    "family": "Ramachandran",
+    "given": "Sridhar"
+   },
+   {
+    "family": "Ruzicka",
+    "given": "Leyla"
+   },
+   {
+    "family": "Westerfield",
+    "given": "Monte"
+   }
+  ],
+  "journal": "GENETICS",
+  "journal_short": "Genetics",
+  "year": 2023,
+  "volume": "224",
+  "issue": "1",
+  "pages": "iyad031",
+  "type": "article",
+  "short_authors": "The Gene Ontology Consortium, Aleksander SA, Balhoff J, et al",
+  "pmid": "36866529",
+  "checked": "2026-10-31"
+ },
+ "love_workflow": {
+  "doi": "10.12688/f1000research.7035.1",
+  "source": "crossref",
+  "title": "RNA-Seq workflow: gene-level exploratory analysis and differential expression",
+  "authors": [
+   {
+    "family": "Love",
+    "given": "Michael I."
+   },
+   {
+    "family": "Anders",
+    "given": "Simon"
+   },
+   {
+    "family": "Kim",
+    "given": "Vladislav"
+   },
+   {
+    "family": "Huber",
+    "given": "Wolfgang"
+   }
+  ],
+  "journal": "F1000Research",
+  "journal_short": "F1000Res",
+  "year": 2015,
+  "volume": "4",
+  "issue": "",
+  "pages": "1070",
+  "type": "article",
+  "short_authors": "Love MI, Anders S, Kim V, Huber W",
+  "pmid": "26674615",
+  "checked": "2026-10-31"
+ },
+ "conesa": {
+  "doi": "10.1186/s13059-016-0881-8",
+  "source": "crossref",
+  "title": "A survey of best practices for RNA-seq data analysis",
+  "authors": [
+   {
+    "family": "Conesa",
+    "given": "Ana"
+   },
+   {
+    "family": "Madrigal",
+    "given": "Pedro"
+   },
+   {
+    "family": "Tarazona",
+    "given": "Sonia"
+   },
+   {
+    "family": "Gomez-Cabrero",
+    "given": "David"
+   },
+   {
+    "family": "Cervera",
+    "given": "Alejandra"
+   },
+   {
+    "family": "McPherson",
+    "given": "Andrew"
+   },
+   {
+    "family": "Szcześniak",
+    "given": "Michał Wojciech"
+   },
+   {
+    "family": "Gaffney",
+    "given": "Daniel J."
+   },
+   {
+    "family": "Elo",
+    "given": "Laura L."
+   },
+   {
+    "family": "Zhang",
+    "given": "Xuegong"
+   },
+   {
+    "family": "Mortazavi",
+    "given": "Ali"
+   }
+  ],
+  "journal": "Genome Biology",
+  "journal_short": "Genome Biol",
+  "year": 2016,
+  "volume": "17",
+  "issue": "1",
+  "pages": "13",
+  "type": "article",
+  "short_authors": "Conesa A, Madrigal P, Tarazona S, et al",
+  "pmid": "26813401",
+  "checked": "2026-10-31"
+ },
+ "tg_paper": {
+  "doi": "10.1038/s41598-023-40380-6",
+  "source": "crossref",
+  "title": "Sex-dependent differences in the genomic profile of lingual sensory neurons in naïve and tongue-tumor bearing mice",
+  "authors": [
+   {
+    "family": "Ibrahim",
+    "given": "Tarek"
+   },
+   {
+    "family": "Wu",
+    "given": "Ping"
+   },
+   {
+    "family": "Wang",
+    "given": "Li-Ju"
+   },
+   {
+    "family": "Fang-Mei",
+    "given": "Chang"
+   },
+   {
+    "family": "Murillo",
+    "given": "Josue"
+   },
+   {
+    "family": "Merlo",
+    "given": "Jaclyn"
+   },
+   {
+    "family": "Shein",
+    "given": "Sergey S."
+   },
+   {
+    "family": "Tumanov",
+    "given": "Alexei V."
+   },
+   {
+    "family": "Lai",
+    "given": "Zhao"
+   },
+   {
+    "family": "Weldon",
+    "given": "Korri"
+   },
+   {
+    "family": "Chen",
+    "given": "Yidong"
+   },
+   {
+    "family": "Ruparel",
+    "given": "Shivani"
+   }
+  ],
+  "journal": "Scientific Reports",
+  "journal_short": "Sci Rep",
+  "year": 2023,
+  "volume": "13",
+  "issue": "1",
+  "pages": "13117",
+  "type": "article",
+  "short_authors": "Ibrahim T, Wu P, Wang LJ, et al",
+  "pmid": "37573456",
+  "checked": "2026-10-31"
+ },
+ "tg_data": {
+  "doi": "10.26275/gaap-zlpj",
+  "source": "datacite",
+  "title": "Sex-dependent differences in the genomic profile of lingual sensory neurons in naive and tongue-tumor bearing mice",
+  "authors": [
+   {
+    "family": "Tumanov",
+    "given": "Alexei V",
+    "orcid": "https://orcid.org/0000-0001-6042-0152"
+   },
+   {
+    "family": "Shein",
+    "given": "Sergey A",
+    "orcid": "https://orcid.org/0000-0003-0258-425X"
+   },
+   {
+    "family": "Lai",
+    "given": "Zhao",
+    "orcid": ""
+   },
+   {
+    "family": "Chen",
+    "given": "Yidong",
+    "orcid": "https://orcid.org/0000-0001-6806-2185"
+   },
+   {
+    "family": "Ruparel",
+    "given": "Shivani B",
+    "orcid": "https://orcid.org/0000-0002-8232-3780"
+   }
+  ],
+  "journal": "SPARC Portal",
+  "year": 2025,
+  "volume": "",
+  "issue": "",
+  "pages": "",
+  "type": "data",
+  "licence": "Creative Commons Attribution 4.0 International",
+  "journal_short": "SPARC Portal",
+  "short_authors": "Tumanov AV, Shein SA, Lai Z, Chen Y, Ruparel SB",
+  "pmid": "",
+  "checked": "2026-10-31"
+ },
+ "oa_data": {
+  "doi": "10.26275/robc-8zol",
+  "source": "datacite",
+  "title": "Cross-platform transcriptomic data integration of human osteoarthritis synovium",
+  "authors": [
+   {
+    "family": "Newton",
+    "given": "Michael D",
+    "orcid": "https://orcid.org/0000-0003-1262-0613"
+   },
+   {
+    "family": "Swahn",
+    "given": "Hannah",
+    "orcid": "https://orcid.org/0000-0001-7815-2387"
+   },
+   {
+    "family": "Orange",
+    "given": "Dana",
+    "orcid": "https://orcid.org/0000-0001-9859-7199"
+   },
+   {
+    "family": "Lesnak",
+    "given": "Joseph B",
+    "orcid": "https://orcid.org/0000-0002-4098-9090"
+   },
+   {
+    "family": "Price",
+    "given": "Theodore J",
+    "orcid": "https://orcid.org/0000-0002-6971-6221"
+   },
+   {
+    "family": "Malfait",
+    "given": "Anne-Marie",
+    "orcid": "https://orcid.org/0000-0003-1428-0384"
+   },
+   {
+    "family": "Miller",
+    "given": "Rachel E",
+    "orcid": "https://orcid.org/0000-0002-4486-5757"
+   },
+   {
+    "family": "Lotz",
+    "given": "Martin K",
+    "orcid": "https://orcid.org/0000-0002-6299-8799"
+   },
+   {
+    "family": "Maerz",
+    "given": "Tristan",
+    "orcid": "https://orcid.org/0000-0002-4523-6012"
+   }
+  ],
+  "journal": "SPARC Portal",
+  "year": 2025,
+  "volume": "",
+  "issue": "",
+  "pages": "",
+  "type": "data",
+  "licence": "Creative Commons Attribution 4.0 International",
+  "journal_short": "SPARC Portal",
+  "short_authors": "Newton MD, Swahn H, Orange D, et al",
+  "pmid": "",
+  "checked": "2026-10-31"
+ }
+}

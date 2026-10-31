@@ -1,0 +1,140 @@
+# yaml-language-server: $schema=https://schemas.pennsieve.io/app-manifest/v1.json
+schemaVersion: "1.0"
+application:
+  name: Bulk RNA-seq Differential Expression
+  description: >-
+    Differential expression between groups of bulk RNA-seq samples with PyDESeq2 (DESeq2's
+    negative binomial model), for any design of sample-sheet columns (~ condition,
+    ~ sex + condition, ~ donor + tissue) and any contrasts between their levels, with shrunk
+    log2 fold changes, a PCA of the variance-stabilised counts, volcano and MA plots, and
+    preranked gene set enrichment (GSEA) on MSigDB Hallmark and GO biological process sets
+    (human, mouse, rat). Reads rnaseq-quant's gene_counts.csv or count tables as deposited:
+    featureCounts, RSEM, htseq-count, STAR ReadsPerGene, or a genes x samples CSV/TSV/XLSX;
+    sample metadata from a sample sheet or SPARC samples/subjects sheets. Everything is
+    written under a folder named after LABEL, so several comparisons can feed one report.
+  type: processor
+  tags:
+    - bulk-rna-seq
+    - transcriptomics
+    - genomics
+    - differential-expression
+    - gene-set-enrichment
+    - statistics
+    - neuroscience
+    - pain
+    - musculoskeletal
+runtime:
+  cpu: 2048
+  # Light step: runs as a container (standard) or as a Lambda function (the image serves both,
+  # see processor/entry.py). Measured on Discover 427 (12 libraries x 22.6 k genes, two
+  # contrasts with GSEA) and Discover 457 (48 x 23.5 k): see README "Runtime".
+  memory: 3008
+  computeTypes:
+    - standard
+    - lambda
+  timeoutSeconds: 900
+parameters:
+  - name: LABEL
+    type: string
+    description: >-
+      Name of this comparison (lowercase letters, digits, '-'); every output is written under
+      OUTPUT_DIR/<LABEL>/. Empty: the last DESIGN term with '_' as '-' (e.g. condition).
+    defaultValue: ""
+  - name: DESIGN
+    type: string
+    description: >-
+      Model formula of sample-sheet columns joined by '+', the variable of interest last
+      (e.g. "~ condition", "~ sex + condition", "~ donor + tissue"). Every term is a factor; no
+      interactions. Column names are snake_case ('OA grade' -> oa_grade). "condition" falls
+      back to SPARC's subject_experimental_group, then sample_experimental_group.
+    defaultValue: "~ condition"
+  - name: CONTRASTS
+    type: string
+    description: >-
+      Comparisons as column:level:reference, comma-separated (e.g.
+      "condition:T:N,sex:M:F"); log2 fold change > 0 = higher in level. Empty: every level of
+      the last DESIGN term against its reference.
+    defaultValue: ""
+  - name: REFERENCE_LEVELS
+    type: string
+    description: >-
+      Base level per factor as column:level, comma-separated (e.g. "condition:N"). Unset
+      factors take the reference of their first contrast, else the first level alphabetically.
+      Shrunk fold changes exist for contrasts against the base level.
+    defaultValue: ""
+  - name: SAMPLE_SHEET
+    type: string
+    description: >-
+      File name of the sample sheet to use (CSV, TSV or XLSX anywhere under the input). Empty:
+      the sheet whose column names the most count samples (a sample sheet, rnaseq-quant's
+      samples.csv, or SPARC samples.xlsx joined to subjects.xlsx).
+    defaultValue: ""
+  - name: MIN_COUNT
+    type: integer
+    description: A gene is tested when it has at least this many counts in at least MIN_SAMPLES samples.
+    defaultValue: 10
+    min: 0
+  - name: MIN_SAMPLES
+    type: integer
+    description: See MIN_COUNT. 0 = the size of the smallest group of the last DESIGN term.
+    defaultValue: 0
+    min: 0
+  - name: FDR
+    type: number
+    description: Benjamini-Hochberg adjusted p-value below which a gene or gene set counts as significant.
+    defaultValue: 0.05
+    min: 0
+    max: 1
+  - name: LFC_SHRINK
+    type: boolean
+    description: >-
+      Also write shrunk log2 fold changes (PyDESeq2's apeglm-type prior) for ranking and the MA
+      plot. Tests and p-values are the same either way.
+    defaultValue: true
+  - name: GENE_SETS
+    type: string
+    description: >-
+      Gene-set collections for preranked GSEA, comma-separated: hallmark (MSigDB H/MH), go-bp
+      (GO biological process, MSigDB C5/M5), or none.
+    defaultValue: "hallmark,go-bp"
+  - name: ORGANISM
+    type: string
+    description: >-
+      Organism of the genes, for gene-set mapping: human, mouse, rat (mapped to mouse
+      orthologs), or auto (from the sheet's species column, else Ensembl id prefix, else gene
+      symbol case; symbols alone cannot tell mouse from rat).
+    defaultValue: "auto"
+    validValues: ["auto", "human", "mouse", "rat"]
+  - name: SEED
+    type: integer
+    description: Seed for the GSEA permutations.
+    defaultValue: 42
+  - name: THREADS
+    type: integer
+    description: Threads for PyDESeq2, GSEA and BLAS; 0 = from the container's CPU quota.
+    defaultValue: 0
+    min: 0
+inputs:
+  - name: counts
+    description: >-
+      Gene counts: rnaseq-quant's counts output (gene_counts.csv + samples.csv), or deposited
+      tables (featureCounts, RSEM *.genes.results, htseq-count or other two-column per-sample
+      files, STAR ReadsPerGene.out.tab, a genes x samples CSV/TSV/XLSX), with a sample sheet or
+      SPARC samples.xlsx / subjects.xlsx naming the samples.
+    mediaTypes:
+      - text/csv
+      - text/tab-separated-values
+      - text/plain
+      - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    required: true
+# One output: the whole of OUTPUT_DIR; the app writes into OUTPUT_DIR/<LABEL>/.
+outputs:
+  - name: de
+    description: >-
+      <LABEL>/design.json, samples.csv, pca.csv, pca.png, <contrast>.csv, <contrast>_volcano.png,
+      <contrast>_ma.png, <contrast>_gsea.csv, de.json, summary.json, provenance.json
+      (<contrast> = <column>-<level>-vs-<reference>).
+    mediaTypes:
+      - text/csv
+      - application/json
+      - image/png

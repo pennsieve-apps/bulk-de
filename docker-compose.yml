@@ -1,0 +1,17 @@
+services:
+  processor:
+    image: bulk-de:dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+    platform: linux/amd64
+    mem_limit: 3g
+    network_mode: none
+    read_only: true
+    tmpfs:
+      - /tmp
+    env_file:
+      - dev.env
+    volumes:
+      - ${INPUT:-./data/fixture/rejoin}:/data/input:ro
+      - ./data/output:/data/output
