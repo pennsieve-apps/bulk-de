@@ -132,6 +132,10 @@ def build(terms: list[str], meta: pd.DataFrame, contrasts: list[Contrast], refer
             if lv not in levels[c.column]:
                 raise DesignError(f"contrast {c.text}: {lv!r} is not a level of {c.column} "
                                   f"(levels: {', '.join(sorted(levels[c.column]))})")
+    names = [c.name for c in contrasts]
+    clash = sorted({n for n in names if names.count(n) > 1})
+    if clash:
+        raise DesignError(f"contrasts with the same file name after replacing special characters: {', '.join(clash)}")
     d = Design(terms, levels, contrasts)
     d.tokens = {c: f"F{i}" for i, c in enumerate(terms)}
     d.level_tokens = {c: {lv: f"L{j:02d}" for j, lv in enumerate(lvs)} for c, lvs in levels.items()}

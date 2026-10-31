@@ -173,6 +173,17 @@ def _write(path: Path, text: str) -> Path:
     return path
 
 
+def _load(root: Path) -> "C.Counts":
+    from processor.safe_inputs import InputDir
+
+    inp = InputDir(root)
+    return C.load(inp, inp.walk())
+
+
+def _matrix_rows(genes, rng, n=3):
+    return [[g] + [str(int(x)) for x in rng.integers(0, 200, n)] for g in genes]
+
+
 def test_other_layouts(tmp_path):
     genes = [f"ENSMUSG{i:011d}" for i in range(120)]
     rng = np.random.default_rng(0)
@@ -180,52 +191,137 @@ def test_other_layouts(tmp_path):
     lines = ["# Program:featureCounts v2.0.6; Command:...", "Geneid\tChr\tStart\tEnd\tStrand\tLength\t"
              "/x/a.Aligned.sortedByCoord.out.bam\t/x/b.bam"]
     lines += [f"{g}\tchr1\t1\t100\t+\t100\t{rng.integers(0, 50)}\t{rng.integers(0, 50)}" for g in genes]
-    f = _write(tmp_path / "fc" / "counts.txt", "\n".join(lines) + "\n")
-    c = C.load([f], tmp_path / "fc")
+    _write(tmp_path / "fc" / "counts.txt", "\n".join(lines) + "\n")
+    c = _load(tmp_path / "fc")
     assert c.layout == "featureCounts" and list(c.matrix.columns) == ["a", "b"]
     assert c.matrix.shape == (120, 2)
     # STAR, reverse-stranded
-    files = []
     for s in ("s1", "s2"):
         body = "N_unmapped\t5\t5\t5\nN_multimapping\t9\t9\t9\nN_noFeature\t1\t50\t2\nN_ambiguous\t1\t1\t1\n"
         body += "".join(f"{g}\t{10 + i}\t{i % 3}\t{10 + i}\n" for i, g in enumerate(genes))
-        files.append(_write(tmp_path / "star" / s / f"{s}ReadsPerGene.out.tab", body))
-    c = C.load(files, tmp_path / "star")
+        _write(tmp_path / "star" / s / f"{s}ReadsPerGene.out.tab", body)
+    c = _load(tmp_path / "star")
     assert c.layout == "STAR" and list(c.matrix.columns) == ["s1", "s2"] and c.matrix.iloc[5, 0] == 15
     assert any("reverse-stranded" in n for n in c.notes)
     # RSEM, rounded
-    files = [_write(tmp_path / "rsem" / f"{s}.genes.results",
-                    "gene_id\ttranscript_id(s)\tlength\teffective_length\texpected_count\tTPM\tFPKM\n"
-                    + "".join(f"{g}\tT\t100\t80\t{i + 0.4}\t1\t1\n" for i, g in enumerate(genes)))
-             for s in ("r1", "r2", "r3")]
-    c = C.load(files, tmp_path / "rsem")
+    for s in ("r1", "r2", "r3"):
+        _write(tmp_path / "rsem" / f"{s}.genes.results",
+               "gene_id\ttranscript_id(s)\tlength\teffective_length\texpected_count\tTPM\tFPKM\n"
+               + "".join(f"{g}\tT\t100\t80\t{i + 0.4}\t1\t1\n" for i, g in enumerate(genes)))
+    c = _load(tmp_path / "rsem")
     assert c.layout == "RSEM" and c.matrix.shape == (120, 3) and c.matrix.iloc[3, 0] == 3
     # rnaseq-quant gene_counts.csv wins over anything else, gene_tpm.csv is not counts
     q = pd.DataFrame({"gene_id": genes, "gene_name": [f"G{i}" for i in range(120)], "a": 5, "b": 6})
     q.to_csv(tmp_path / "rsem" / "gene_counts.csv", index=False)
     q.assign(a=0.5).to_csv(tmp_path / "rsem" / "gene_tpm.csv", index=False)
-    c = C.load(sorted((tmp_path / "rsem").iterdir()), tmp_path / "rsem")
+    c = _load(tmp_path / "rsem")
     assert c.layout == "rnaseq-quant" and c.gene_names.iloc[1] == "G1"
+
+
+def test_featurecounts_one_file_per_sample(tmp_path):
+    """Three per-sample featureCounts files are merged (review: only the first was used, then a traceback)."""
+    genes = [f"ENSMUSG{i:011d}" for i in range(120)]
+    for s in ("a", "b", "c"):
+        lines = ["# Program:featureCounts v2.0.6", f"Geneid\tChr\tStart\tEnd\tStrand\tLength\t/x/{s}.bam"]
+        lines += [f"{g}\tchr1\t1\t100\t+\t100\t{i + ord(s)}" for i, g in enumerate(genes)]
+        _write(tmp_path / s / f"{s}.featureCounts.txt", "\n".join(lines) + "\n")
+    c = _load(tmp_path)
+    assert c.layout == "featureCounts" and list(c.matrix.columns) == ["a", "b", "c"] and len(c.files) == 3
+    assert c.matrix.loc[genes[2], "c"] == 2 + ord("c")
+
+
+def test_r_header_one_cell_short(tmp_path):
+    """R's write.table(sep='\\t') header has no name above the row names: the samples must not shift."""
+    genes = [f"g{i}" for i in range(150)]
+    rng = np.random.default_rng(1)
+    rows = _matrix_rows(genes, rng)
+    _write(tmp_path / "counts.tsv", "S1\tS2\tS3\n" + "".join("\t".join(r) + "\n" for r in rows))
+    c = _load(tmp_path)
+    assert list(c.matrix.columns) == ["S1", "S2", "S3"]
+    assert c.matrix.loc["g7", "S1"] == int(rows[7][1]) and c.matrix.loc["g7", "S3"] == int(rows[7][3])
+
+
+def test_title_row_with_numeric_sample_names_refused(fx, tmp_path, monkeypatch):
+    genes = [f"g{i}" for i in range(150)]
+    rows = _matrix_rows(genes, np.random.default_rng(2), 4)
+    _write(tmp_path / "in" / "counts.csv", "Raw counts,,\ngene,1,2,3,4\n" + "".join(",".join(r) + "\n" for r in rows))
+    with pytest.raises(C.NoCounts, match="no name in the header row"):
+        _load(tmp_path / "in")
+    assert run(tmp_path / "in", tmp_path / "out", monkeypatch, fx / "genesets") == 1
+
+
+def test_tpm_table_refused(fx, tmp_path, monkeypatch):
+    rng = np.random.default_rng(3)
+    x = rng.gamma(0.5, 1.0, (300, 4))
+    tpm = pd.DataFrame(x / x.sum(axis=0) * 1e6, columns=["s1", "s2", "s3", "s4"])
+    tpm.insert(0, "gene", [f"g{i}" for i in range(300)])
+    tpm.to_csv(_write(tmp_path / "in" / "expression.csv", ""), index=False)
+    with pytest.raises(C.NoCounts, match="normalised"):
+        _load(tmp_path / "in")
+    assert run(tmp_path / "in", tmp_path / "out", monkeypatch, fx / "genesets") == 1
 
 
 def test_negative_values_rejected(tmp_path):
     rows = "\n".join(f"g{i},{i},{-1 if i == 5 else i}" for i in range(150))
-    f = _write(tmp_path / "m.csv", "gene,a,b\n" + rows + "\n")
+    _write(tmp_path / "m.csv", "gene,a,b\n" + rows + "\n")
     with pytest.raises(C.NoCounts):
-        C.load([f], tmp_path)
+        _load(tmp_path)
+
+
+def test_xlsx_uncompressed_cap(fx, tmp_path, monkeypatch):
+    from processor import tables as T
+
+    monkeypatch.setattr(T, "MAX_XLSX_UNCOMPRESSED", 1000)
+    df = pd.DataFrame({"gene": [f"g{i}" for i in range(150)], "a": 1, "b": 2})
+    df.to_excel(tmp_path / "counts.xlsx", index=False)
+    with pytest.raises(C.NoCounts, match="unpacks to more than"):
+        _load(tmp_path)
 
 
 def test_symlink_escape_ignored(fx, tmp_path, monkeypatch):
+    """A link below a port folder that leaves the input is skipped (the shared InputDir walker)."""
+    from processor.safe_inputs import InputDir
+
     inp = tmp_path / "in"
     shutil.copytree(fx / "rejoin", inp)
     outside = tmp_path / "secret"
     outside.mkdir()
     (outside / "other.csv").write_text("x,y\n1,2\n")
-    (inp / "counts" / "link").symlink_to(outside)
-    from processor.tables import walk
-
-    names = [p.name for p in walk(inp)]
+    (inp / "counts" / "sub").mkdir()
+    (inp / "counts" / "sub" / "link").symlink_to(outside)
+    names = [p.name for p in InputDir(inp).walk()]
     assert "other.csv" not in names and "knee_spine_counts.csv" in names
+
+
+def test_gsea_core_matches_gseapy_prerank():
+    """processor/gsea.py calls GSEApy's Rust core directly: pin its signature and compare with gseapy.prerank."""
+    import gseapy
+    from gseapy.gse import prerank_rs
+
+    from processor import gsea as G
+
+    assert prerank_rs.__text_signature__ == "(genes, metric, gene_sets, weight, min_size, max_size, nperm, threads, seed)"
+    rng = np.random.default_rng(0)
+    genes = [f"G{i}" for i in range(1000)]
+    rnk = pd.Series(rng.normal(size=1000), index=genes)
+    rnk.iloc[:25] += 3
+    rnk = rnk.sort_values(ascending=False)
+    sets = {"UP": genes[:25] + genes[500:505], "R1": list(rng.choice(genes, 40, replace=False)),
+            "R2": list(rng.choice(genes, 60, replace=False))}
+    G.gene_sets.cache_clear()
+    ours = G.run_sets(rnk, sets, "x", seed=7, threads=1).set_index("term")
+    ref = gseapy.prerank(rnk=rnk, gene_sets=sets, min_size=15, max_size=500, permutation_num=1000, seed=7,
+                         threads=1, outdir=None, no_plot=True, verbose=False).res2d.set_index("Term")
+    for t in sets:
+        assert ours.at[t, "es"] == pytest.approx(float(ref.at[t, "ES"]), abs=1e-6)
+        assert ours.at[t, "nes"] == pytest.approx(float(ref.at[t, "NES"]), abs=0.15)
+        assert ours.at[t, "size"] == int(str(ref.at[t, "Tag %"]).split("/")[1])
+    assert ours.at["UP", "fdr"] < 0.05 and float(ref.at["UP", "FDR q-val"]) < 0.05
+
+
+def test_contrast_name_collision(fx, tmp_path, monkeypatch):
+    assert run(fx / "rejoin", tmp_path, monkeypatch, fx / "genesets", DESIGN="~ tissue",
+               CONTRASTS="tissue:meniscus:cartilage,tissue:meniscus:cartilage") == 2
 
 
 def test_bad_parameters(fx, tmp_path, monkeypatch):

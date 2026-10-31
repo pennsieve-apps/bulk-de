@@ -31,12 +31,13 @@ DOIS = {
     "tg_paper": "10.1038/s41598-023-40380-6",
     "tg_data": "10.26275/gaap-zlpj",
     "oa_data": "10.26275/robc-8zol",
+    "oa_paper": "10.1016/j.joca.2025.08.013",
 }
 JOURNAL_SHORT = {"Bioinformatics": "Bioinformatics", "Genome Biology": "Genome Biol",
                  "Proceedings of the National Academy of Sciences": "Proc Natl Acad Sci U S A",
                  "Cell Systems": "Cell Syst", "Nature Methods": "Nat Methods", "Nature Genetics": "Nat Genet",
                  "GENETICS": "Genetics", "Genetics": "Genetics", "F1000Research": "F1000Res",
-                 "Scientific Reports": "Sci Rep",
+                 "Scientific Reports": "Sci Rep", "Osteoarthritis and Cartilage": "Osteoarthritis Cartilage",
                  "Journal of the Royal Statistical Society Series B: Statistical Methodology": "J R Stat Soc Series B"}
 
 

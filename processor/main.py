@@ -111,13 +111,6 @@ def read_parameters(env=os.environ) -> dict:
 
 # ---- helpers -----------------------------------------------------------------------------------
 
-def _rel(path, root: Path):
-    try:
-        return str(Path(path).relative_to(root))
-    except ValueError:
-        return str(path)
-
-
 def _clean_json(obj):
     import numpy as np
 
@@ -229,16 +222,20 @@ def main() -> int:
     from processor import figures as F
     from processor import gsea as G
     from processor import metadata as M
-    from processor import tables as T
+    from processor.safe_inputs import InputDir, assert_defusedxml
 
     np.random.seed(params["SEED"])
-    files = T.walk(input_dir)
-    port = input_dir / "counts"
-    count_files = [f for f in files if port.is_dir() and T._inside(str(f), str(port))] or files
+    assert_defusedxml()
+    inp = InputDir(input_dir)
+    files = inp.walk()
+    count_files = [f for f in files if inp.rel(f).startswith("counts/")] or files
     try:
-        counts = C.load(count_files, input_dir)
+        counts = C.load(inp, count_files)
     except C.NoCounts as exc:
-        log.error("%s under %s", exc, input_dir)
+        log.error("%s", exc)
+        return 1
+    except Exception as exc:  # no parser failure may end in a traceback
+        log.error("reading the counts failed: %s: %s", type(exc).__name__, exc)
         return 1
     samples = list(counts.matrix.columns)
     log.info("counts: %s layout, %d genes x %d samples from %d file(s)", counts.layout, counts.matrix.shape[0],
@@ -248,7 +245,7 @@ def main() -> int:
     if params["SAMPLE_SHEET"] and not any(f.name == params["SAMPLE_SHEET"] for f in files):
         log.error("SAMPLE_SHEET %s not found under INPUT_DIR", params["SAMPLE_SHEET"])
         return 2
-    meta = M.find(files, set(counts.files), samples, params["SAMPLE_SHEET"])
+    meta = M.find(inp, files, set(counts.files), samples, params["SAMPLE_SHEET"])
     table = meta.table
     notes = counts.notes + meta.notes
     terms = params["terms"]
@@ -409,15 +406,14 @@ def main() -> int:
                   "min_samples": min_samples},
     })
     write_json(out / "de.json", {
-        "layout": counts.layout, "files": [_rel(f, input_dir) for f in counts.files],
+        "layout": counts.layout, "files": [inp.rel(f) for f in counts.files],
         "n_genes": int(counts.matrix.shape[0]), "n_samples": len(samples), "samples": samples,
         "sample_sheet": meta.sheet, "sample_sheet_column": meta.match_column, "subjects_sheet": meta.subjects_sheet,
         "n_samples_matched": meta.n_matched, "organism": organism, "organism_from": how,
         "gene_sets": {"collections": params["GENE_SETS"], "release": G.release().get("source"),
                       "species": G.SET_SPECIES[organism],
                       "n_genes_mapped": int((symbols != "").sum()) if symbols is not None else None},
-        "skipped": {**{_rel(k, input_dir): v for k, v in counts.skipped.items()},
-                    **{_rel(k, input_dir): v for k, v in meta.skipped.items()}},
+        "skipped": {**counts.skipped, **meta.skipped},
         "notes": notes,
     })
     write_json(out / "summary.json", {
@@ -425,6 +421,7 @@ def main() -> int:
         "n_samples": len(used), "n_samples_left_out": len(samples) - len(used),
         "n_genes_tested": int(filt.shape[1]), "organism": organism, "layout": counts.layout,
         "pca": {"variance_explained": var[:5], "n_genes": min(D.PCA_TOP_GENES, int(filt.shape[1]))},
+        "gsea_permutations": G.PERMUTATIONS if symbols is not None else None,
         "contrasts": per_contrast, "notes": notes, "figures": [p.name for p in figures],
     })
     keys = ["pydeseq2", "deseq2", "vst", "bh"] + (["apeglm"] if any(fit.shrunk.values()) else [])
@@ -444,7 +441,7 @@ def main() -> int:
                      "organism": organism, "min_samples": min_samples,
                      "threads": {"n": n_cpus, "source": os.environ.get("BULK_DE_THREADS_SOURCE", "THREADS")}},
         "gene_sets": G.release() if symbols is not None else None,
-        "inputs": {"counts": [_rel(f, input_dir) for f in counts.files], "sample_sheet": meta.sheet,
+        "inputs": {"counts": [inp.rel(f) for f in counts.files], "sample_sheet": meta.sheet,
                    "subjects_sheet": meta.subjects_sheet},
         "started": started.isoformat(), "finished": datetime.now(timezone.utc).isoformat(),
         "timings_seconds": {"deseq2": round(t_fit, 2), "gsea": round(t_gsea, 2),

@@ -3,8 +3,8 @@ The Lambda runtime. A lambda step's payload carries inputDir, outputDir and
 the step's parameters as fields (where a container gets them as environment
 variables); the handler sets those variables and runs the same main(), so
 both runtimes write the same outputs. The thread count was fixed by
-processor/entry.py when the function started (THREADS, else 2: Lambda exposes
-no cgroup CPU quota; 3008 MB gets about two vCPUs).
+processor/entry.py when the function started (THREADS, else the CPUs the function
+may use: Lambda has no cgroup quota; 3008 MB gets about two vCPUs).
 """
 import json
 import os

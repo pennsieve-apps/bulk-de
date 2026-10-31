@@ -1274,5 +1274,58 @@
   "short_authors": "Newton MD, Swahn H, Orange D, et al",
   "pmid": "",
   "checked": "2026-10-31"
+ },
+ "oa_paper": {
+  "doi": "10.1016/j.joca.2025.08.013",
+  "source": "crossref",
+  "title": "Cross-platform transcriptomic data integration identifies an overactive neuro-immune signature in human osteoarthritis synovium",
+  "authors": [
+   {
+    "family": "Newton",
+    "given": "Michael D."
+   },
+   {
+    "family": "Swahn",
+    "given": "Hannah"
+   },
+   {
+    "family": "Orange",
+    "given": "Dana E."
+   },
+   {
+    "family": "Lesnak",
+    "given": "Joseph B."
+   },
+   {
+    "family": "Price",
+    "given": "Theodore J."
+   },
+   {
+    "family": "Malfait",
+    "given": "Anne-Marie"
+   },
+   {
+    "family": "Miller",
+    "given": "Rachel E."
+   },
+   {
+    "family": "Lotz",
+    "given": "Martin K."
+   },
+   {
+    "family": "Maerz",
+    "given": "Tristan"
+   }
+  ],
+  "journal": "Osteoarthritis and Cartilage",
+  "journal_short": "Osteoarthritis Cartilage",
+  "year": 2026,
+  "volume": "34",
+  "issue": "4",
+  "pages": "589-600",
+  "type": "article",
+  "short_authors": "Newton MD, Swahn H, Orange DE, et al",
+  "pmid": "40889615",
+  "checked": "2026-10-31"
  }
 }

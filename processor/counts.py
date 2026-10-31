@@ -32,6 +32,7 @@ import numpy as np
 import pandas as pd
 
 from processor import tables as T
+from processor.safe_inputs import InputDir
 
 log = logging.getLogger("bulk-de")
 
@@ -57,6 +58,9 @@ class NoCounts(Exception):
     pass
 
 
+NORMALISED = re.compile(r"tpm|fpkm|rpkm|cpm|normali[sz]ed", re.I)
+
+
 def _ints(df: pd.DataFrame, what: str, notes: list[str]) -> pd.DataFrame:
     vals = df.apply(lambda c: pd.to_numeric(c.astype(str).str.strip(), errors="coerce"))
     if vals.isna().any().any():
@@ -66,12 +70,16 @@ def _ints(df: pd.DataFrame, what: str, notes: list[str]) -> pd.DataFrame:
     if (vals < 0).any().any():
         raise ValueError("negative values: not counts")
     if not np.allclose(vals.to_numpy(), np.round(vals.to_numpy())):
+        sums = vals.sum(axis=0)
+        if ((sums - 1e6).abs() < 0.02e6).all() or NORMALISED.search(what + " " + " ".join(map(str, df.columns))):
+            raise ValueError("non-integer values that look normalised (TPM/FPKM/CPM: columns sum to a million "
+                             "or are named so); DESeq2 needs raw or estimated counts")
         notes.append(f"{what}: non-integer counts (estimated counts) were rounded")
     return vals.round().astype(np.int64)
 
 
-def sample_name(path: Path, root: Path) -> str:
-    for parent in path.relative_to(root).parents:
+def sample_name(path: Path, rel: str) -> str:
+    for parent in Path(rel).parents:
         if parent.name.lower().startswith(("sam-", "pool-")):
             return parent.name
     name = path.name
@@ -83,7 +91,7 @@ def sample_name(path: Path, root: Path) -> str:
 
 # ---- matrix layouts ----------------------------------------------------------------------------
 
-def _matrix(df: pd.DataFrame, what: str, notes: list[str]) -> tuple[pd.DataFrame, pd.Series]:
+def _matrix(df: pd.DataFrame, what: str, notes: list[str], min_samples: int = 2) -> tuple[pd.DataFrame, pd.Series]:
     """df with a header: first column = gene id, numeric columns = samples, a text column = names."""
     dup = df.columns.duplicated()
     if dup.any():
@@ -94,8 +102,12 @@ def _matrix(df: pd.DataFrame, what: str, notes: list[str]) -> tuple[pd.DataFrame
     sample_cols = [c for c in rest if T.numeric_share(df[c]) >= 0.95]
     text_cols = [c for c in rest if c not in sample_cols]
     name_col = next((c for c in text_cols if NAME_HINT.search(str(c))), text_cols[0] if text_cols else None)
-    if len(sample_cols) < 2:
-        raise ValueError("fewer than two numeric sample columns")
+    if len(sample_cols) < min_samples:
+        raise ValueError(f"fewer than {min_samples} numeric sample columns")
+    unnamed = [c for c in sample_cols if re.fullmatch(r"column_\d+", str(c))]
+    if unnamed:
+        raise ValueError(f"{len(unnamed)} sample columns have no name in the header row (a title row above "
+                         f"numeric sample names?); put the column names in the first row")
     ids = df[id_col].astype(str).str.strip()
     keep = (ids != "") & ~ids.str.startswith(("__", "N_"))
     df = df[keep]
@@ -113,8 +125,8 @@ def _matrix(df: pd.DataFrame, what: str, notes: list[str]) -> tuple[pd.DataFrame
     return counts, names
 
 
-def read_quant(path: Path, notes: list[str]):
-    df = T.with_header(T.read_raw(path))
+def read_quant(inp: InputDir, path: Path, notes: list[str]):
+    df = T.with_header(T.read_raw(inp, path))
     if list(df.columns[:2]) != ["gene_id", "gene_name"]:
         raise ValueError("gene_counts.csv without gene_id, gene_name columns")
     return _matrix(df, path.name, notes)
@@ -129,7 +141,7 @@ def read_featurecounts(raw: pd.DataFrame, what: str, notes: list[str]):
     df.columns = [str(v).strip() for v in raw.iloc[0]]
     df = df.drop(columns=list(df.columns[1:6]))
     df.columns = [df.columns[0]] + [_bam_name(c) for c in df.columns[1:]]
-    return _matrix(df, what, notes)
+    return _matrix(df, what, notes, min_samples=1)
 
 
 def _bam_name(c: str) -> str:
@@ -139,10 +151,10 @@ def _bam_name(c: str) -> str:
 
 # ---- per-sample layouts ------------------------------------------------------------------------
 
-def read_star(path: Path, notes: list[str]) -> tuple[pd.Series, str]:
+def read_star(inp: InputDir, path: Path) -> tuple[pd.Series, str]:
     """STAR --quantMode GeneCounts: col 2 unstranded, 3 forward, 4 reverse. A stranded library puts
     most reads in one of 3/4; we take that column when it holds >= 3x the other, else column 2."""
-    raw = T.read_raw(path)
+    raw = T.read_raw(inp, path)
     raw = raw[~raw[0].astype(str).str.startswith("N_")]
     vals = raw.iloc[:, 1:4].apply(pd.to_numeric, errors="raise").astype(np.int64)
     s3, s4 = int(vals.iloc[:, 1].sum()), int(vals.iloc[:, 2].sum())
@@ -153,8 +165,8 @@ def read_star(path: Path, notes: list[str]) -> tuple[pd.Series, str]:
     return pd.Series(vals.iloc[:, col].to_numpy(), index=raw[0].astype(str).to_numpy()), how
 
 
-def read_rsem(path: Path, notes: list[str]) -> tuple[pd.Series, str]:
-    df = T.with_header(T.read_raw(path))
+def read_rsem(inp: InputDir, path: Path) -> tuple[pd.Series, str]:
+    df = T.with_header(T.read_raw(inp, path))
     if "gene_id" not in df.columns or "expected_count" not in df.columns:
         raise ValueError("no gene_id / expected_count columns")
     v = pd.to_numeric(df["expected_count"], errors="raise")
@@ -175,26 +187,45 @@ def read_two_column(raw: pd.DataFrame) -> pd.Series:
 
 # ---- detection ---------------------------------------------------------------------------------
 
-def load(files: list[Path], root: Path) -> Counts:
+def _combine(parts: dict[str, pd.Series], notes: list[str]) -> pd.DataFrame:
+    """Per-sample count vectors -> genes x samples, on the genes every sample has."""
+    common = set.intersection(*(set(s.index) for s in parts.values()))
+    union = set.union(*(set(s.index) for s in parts.values()))
+    order = [g for g in next(iter(parts.values())).index if g in common]
+    if len(common) < len(union):
+        notes.append(f"{len(union) - len(common)} genes not in every sample's file were dropped")
+    return pd.DataFrame({k: s.reindex(order).to_numpy() for k, s in parts.items()}, index=order).astype(np.int64)
+
+
+def load(inp: InputDir, files: list[Path]) -> Counts:
+    """The first layout found, in the order of the module docstring. Unreadable files are skipped (with
+    the reason); NoCounts when nothing usable is left, with the reasons."""
     tabs = [p for p in files if T.is_table(p) or p.name.endswith(("ReadsPerGene.out.tab", ".genes.results"))]
     notes: list[str] = []
     skipped: dict[str, str] = {}
 
+    def skip(p: Path, exc: Exception) -> None:
+        skipped[inp.rel(p)] = f"{type(exc).__name__}: {exc}" if not isinstance(exc, ValueError) else str(exc)
+        log.warning("%s: not used: %s", inp.rel(p), skipped[inp.rel(p)])
+
     quant = [p for p in tabs if p.name == "gene_counts.csv"]
     if quant:
-        m, names = read_quant(quant[0], notes)
-        return _done(m, names, "rnaseq-quant", [quant[0]], notes, skipped)
+        try:
+            m, names = read_quant(inp, quant[0], notes)
+            return _done(m, names, "rnaseq-quant", [quant[0]], notes, skipped)
+        except (ValueError, OSError) as exc:
+            skip(quant[0], exc)
 
     star = [p for p in tabs if p.name.endswith("ReadsPerGene.out.tab")]
     rsem = [p for p in tabs if p.name.endswith(".genes.results")]
     featurecounts, matrices, two_col = [], [], []
     for p in tabs:
-        if p in star or p in rsem or p.name.lower() in ("samples.csv", "gene_tpm.csv"):
+        if p in star or p in rsem or p in quant or p.name.lower() in ("samples.csv", "gene_tpm.csv"):
             continue
         try:
-            raw = T.read_raw(p)
-        except Exception as exc:  # an unreadable file is not fatal
-            skipped[str(p)] = f"{type(exc).__name__}: {exc}"
+            raw = T.read_raw(inp, p)
+        except (ValueError, OSError) as exc:      # an unreadable file is not fatal
+            skip(p, exc)
             continue
         if raw.empty:
             continue
@@ -205,16 +236,31 @@ def load(files: list[Path], root: Path) -> Counts:
         elif len(raw) >= MIN_MATRIX_ROWS and raw.shape[1] >= 3:
             matrices.append((p, raw))
 
-    if featurecounts:
-        p, raw = featurecounts[0]
-        m, names = read_featurecounts(raw, p.name, notes)
-        return _done(m, names, "featureCounts", [p], notes, skipped)
+    # featureCounts: one table, or one per sample (columns merged on the genes they share)
+    parts: dict[str, pd.Series] = {}
+    used: list[Path] = []
+    for p, raw in featurecounts:
+        try:
+            m, _ = read_featurecounts(raw, p.name, notes)
+        except (ValueError, OSError) as exc:
+            skip(p, exc)
+            continue
+        new = [c for c in m.columns if c not in parts]
+        if len(new) < m.shape[1]:
+            notes.append(f"{p.name}: samples already read from another featureCounts file were ignored")
+        parts.update({c: m[c] for c in new})
+        used.append(p)
+    if parts:
+        m = _combine(parts, notes)
+        return _done(m, pd.Series("", index=m.index), "featureCounts", used, notes, skipped)
+
     best = None
     for p, raw in matrices:
+        notes_m: list[str] = []
         try:
-            m, names = _matrix(T.with_header(raw), p.name, notes_m := [])
+            m, names = _matrix(T.with_header(raw), p.name, notes_m)
         except ValueError as exc:
-            skipped[str(p)] = str(exc)
+            skip(p, exc)
             continue
         integer = not any("rounded" in n for n in notes_m)
         key = (integer, len(m))
@@ -224,28 +270,24 @@ def load(files: list[Path], root: Path) -> Counts:
         _, p, m, names, notes_m = best
         return _done(m, names, "matrix", [p], notes + notes_m, skipped)
 
-    for layout, items, reader in (("STAR", star, read_star), ("RSEM", rsem, read_rsem),
-                                  ("two-column", two_col, None)):
-        if not items:
-            continue
+    for layout, items in (("STAR", star), ("RSEM", rsem), ("two-column", two_col)):
         cols: dict[str, pd.Series] = {}
-        used: list[Path] = []
+        used = []
         hows: set[str] = set()
         for item in items:
             p = item[0] if isinstance(item, tuple) else item
-            sid = sample_name(p, root)
+            sid = sample_name(p, inp.rel(p))
             if sid in cols:
-                skipped[str(p)] = f"a second file for sample {sid}"
+                skipped[inp.rel(p)] = f"a second file for sample {sid}"
                 continue
             try:
-                if reader is None:
+                if layout == "two-column":
                     s = read_two_column(item[1])
                 else:
-                    s, how = reader(p, notes)
+                    s, how = (read_star if layout == "STAR" else read_rsem)(inp, p)
                     hows.add(how)
-            except Exception as exc:  # one bad sample is skipped
-                skipped[str(p)] = f"{type(exc).__name__}: {exc}"
-                log.error("%s: unreadable, skipped: %s", p, exc)
+            except (ValueError, OSError) as exc:  # one bad sample is skipped
+                skip(p, exc)
                 continue
             s = s.groupby(level=0, sort=False).sum()
             cols[sid] = s
@@ -255,15 +297,12 @@ def load(files: list[Path], root: Path) -> Counts:
             continue
         if hows:
             notes.append(f"{layout}: " + "; ".join(sorted(hows)))
-        common = set.intersection(*(set(s.index) for s in cols.values()))
-        union = set.union(*(set(s.index) for s in cols.values()))
-        order = [g for g in next(iter(cols.values())).index if g in common]
-        if len(common) < len(union):
-            notes.append(f"{len(union) - len(common)} genes not in every sample's file were dropped")
-        m = pd.DataFrame({k: s.reindex(order).to_numpy() for k, s in cols.items()}, index=order).astype(np.int64)
+        m = _combine(cols, notes)
         return _done(m, pd.Series("", index=m.index), layout, used, notes, skipped)
-    raise NoCounts("no count table found (gene_counts.csv, featureCounts, a genes x samples table, "
-                   "STAR ReadsPerGene.out.tab, RSEM *.genes.results or per-sample two-column files)")
+    why = "; ".join(f"{k}: {v}" for k, v in skipped.items())
+    raise NoCounts("no usable count table (gene_counts.csv, featureCounts, a genes x samples table, "
+                   "STAR ReadsPerGene.out.tab, RSEM *.genes.results or per-sample two-column files)"
+                   + (f"; not used: {why}" if why else ""))
 
 
 def _done(m, names, layout, used, notes, skipped) -> Counts:

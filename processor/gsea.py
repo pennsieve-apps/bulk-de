@@ -99,32 +99,42 @@ def ranking(res: pd.DataFrame, symbols: pd.Series) -> pd.Series:
     return r.set_index("symbol")["stat"].sort_values(ascending=False)
 
 
-def run(rnk: pd.Series, collections: list[str], species: str, seed: int, threads: int) -> pd.DataFrame:
-    """GSEApy's Rust core (gseapy.gse.prerank_rs, as gseapy.prerank calls it), read set by set: gseapy.prerank
-    keeps every set's running-sum vector as Python lists, > 3 GB for GO:BP on 13 k genes."""
+COLUMNS = ["collection", "term", "size", "es", "nes", "pvalue", "fdr", "n_leading_edge", "leading_edge"]
+# processor.gsea calls GSEApy's Rust core directly (below); tests pin this signature.
+PRERANK_RS_SIGNATURE = "(genes, metric, gene_sets, weight, min_size, max_size, nperm, threads, seed)"
+
+
+def run_sets(rnk: pd.Series, sets: dict[str, list[str]], collection: str, seed: int, threads: int) -> pd.DataFrame:
+    """Preranked GSEA of one collection with GSEApy's Rust core (gseapy.gse.prerank_rs, as gseapy.prerank calls
+    it), read set by set: gseapy.prerank keeps every set's running-sum vector as Python lists, > 3 GB for GO:BP
+    on 13 k genes. rnk must be sorted in descending order."""
     from gseapy.gse import prerank_rs
 
+    if prerank_rs.__text_signature__ != PRERANK_RS_SIGNATURE:
+        raise RuntimeError(f"gseapy.gse.prerank_rs changed signature: {prerank_rs.__text_signature__}")
     genes, values = rnk.index.tolist(), rnk.to_numpy(dtype=float).tolist()
+    res = prerank_rs(genes, values, sets, 1.0, MIN_SIZE, MAX_SIZE, PERMUTATIONS, max(threads, 1), seed)
+    if not res.summaries:
+        log.warning("GSEA %s: no gene set has %d-%d of the ranked genes", collection, MIN_SIZE, MAX_SIZE)
     rows = []
-    for coll in collections:
-        res = prerank_rs(genes, values, gene_sets(coll, species), 1.0, MIN_SIZE, MAX_SIZE, PERMUTATIONS,
-                         max(threads, 1), seed)
-        if not res.summaries:
-            log.warning("GSEA %s: no gene set has %d-%d of the ranked genes", coll, MIN_SIZE, MAX_SIZE)
-        for gs in res.summaries:
-            running = np.asarray(gs.run_es)
-            hits = list(gs.hits)
-            if gs.es >= 0:
-                lead = [h for h in hits if h <= int(running.argmax())]
-            else:
-                lead = [h for h in hits if h >= int(running.argmin())][::-1]
-            rows.append({"collection": coll, "term": gs.term, "size": len(hits), "es": gs.es, "nes": gs.nes,
-                         "pvalue": gs.pval, "fdr": gs.fdr, "n_leading_edge": len(lead),
-                         "leading_edge": ";".join(genes[h] for h in lead)})
-    out = pd.DataFrame(rows, columns=["collection", "term", "size", "es", "nes", "pvalue", "fdr", "n_leading_edge",
-                                      "leading_edge"]).astype({"es": float, "nes": float, "pvalue": float, "fdr": float})
+    for gs in res.summaries:
+        running = np.asarray(gs.run_es)
+        hits = list(gs.hits)
+        if gs.es >= 0:
+            lead = [h for h in hits if h <= int(running.argmax())]
+        else:
+            lead = [h for h in hits if h >= int(running.argmin())][::-1]
+        rows.append({"collection": collection, "term": gs.term, "size": len(hits), "es": gs.es, "nes": gs.nes,
+                     "pvalue": gs.pval, "fdr": gs.fdr, "n_leading_edge": len(lead),
+                     "leading_edge": ";".join(genes[h] for h in lead)})
+    return pd.DataFrame(rows, columns=COLUMNS).astype({"es": float, "nes": float, "pvalue": float, "fdr": float})
+
+
+def run(rnk: pd.Series, collections: list[str], species: str, seed: int, threads: int) -> pd.DataFrame:
+    frames = [run_sets(rnk, gene_sets(c, species), c, seed, threads) for c in collections]
+    out = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=COLUMNS)
     if out.empty:
-        return out
+        return out.astype({"es": float, "nes": float, "pvalue": float, "fdr": float})
     out = out.assign(_abs=-out["nes"].abs())
     return out.sort_values(["collection", "pvalue", "_abs"]).drop(columns="_abs").reset_index(drop=True)
 

@@ -27,6 +27,7 @@ from pathlib import Path
 import pandas as pd
 
 from processor import tables as T
+from processor.safe_inputs import InputDir
 
 log = logging.getLogger("bulk-de")
 PREFIX = re.compile(r"^(sam|sub|pool)-", re.I)
@@ -49,27 +50,26 @@ class Metadata:
     skipped: dict[str, str] = field(default_factory=dict)
 
 
-def _sheets(files: list[Path], exclude: set[Path], wanted: str) -> tuple[list[tuple[Path, pd.DataFrame]], dict]:
+def _sheets(inp: InputDir, files: list[Path], exclude: set[Path], wanted: str
+            ) -> tuple[list[tuple[Path, pd.DataFrame]], dict]:
     out, skipped = [], {}
     for p in files:
         if p in exclude or not T.is_table(p) or p.name.endswith((".genes.results", "ReadsPerGene.out.tab")):
             continue
         if wanted and p.name != wanted:
             continue
-        if p.stat().st_size > T.MAX_SHEET_BYTES:
-            continue
         try:
-            df = T.read_sheet(p)
-        except Exception as exc:  # an unreadable sheet is not fatal
-            skipped[str(p)] = f"{type(exc).__name__}: {exc}"
+            df = T.read_sheet(inp, p)
+        except (ValueError, OSError) as exc:  # an unreadable or oversized sheet is not fatal
+            skipped[inp.rel(p)] = str(exc)
             continue
         if not df.empty and df.shape[1] >= 2:
             out.append((p, df))
     return out, skipped
 
 
-def find(files: list[Path], exclude: set[Path], samples: list[str], wanted: str) -> Metadata:
-    sheets, skipped = _sheets(files, exclude, wanted)
+def find(inp: InputDir, files: list[Path], exclude: set[Path], samples: list[str], wanted: str) -> Metadata:
+    sheets, skipped = _sheets(inp, files, exclude, wanted)
     wanted_keys = {key(s): s for s in samples}
     best = None
     for p, df in sheets:

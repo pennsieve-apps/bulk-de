@@ -38,16 +38,22 @@ The first layout found is used (in this order); the others are ignored and liste
 | Layout | Recognised by | Notes |
 |---|---|---|
 | rnaseq-quant | `gene_counts.csv` (`gene_id, gene_name`, one column per sample) | length-scaled counts, as conventions.md describes |
-| featureCounts | header `Geneid Chr Start End Strand Length ...` | sample = BAM file name without `Aligned.sortedByCoord.out.bam` etc. |
-| genes x samples table | any other CSV/TSV/XLSX with >= 100 rows and >= 2 numeric columns | first column = gene id (Ensembl, Entrez or symbol), a text column = gene names, numeric columns = samples; a title row above the header is skipped (as in many deposited spreadsheets); `Length`/`Chr`/`Start`/... columns are not samples; a sample column named twice keeps its first copy (noted); duplicated gene ids are summed (noted) |
+| featureCounts | header `Geneid Chr Start End Strand Length ...` | one table, or one file per sample (merged on the genes they share); sample = BAM file name without `Aligned.sortedByCoord.out.bam` etc. |
+| genes x samples table | any other CSV/TSV/XLSX with >= 100 rows and >= 2 numeric columns | first column = gene id (Ensembl, Entrez or symbol), a text column = gene names, numeric columns = samples; a title row above the header is skipped (as in many deposited spreadsheets); `Length`/`Chr`/`Start`/... columns are not samples; a header one cell shorter than the data (R's `write.table` with row names) is shifted onto the sample columns; a sample column named twice keeps its first copy (noted); duplicated gene ids are summed (noted); a title row above **numeric** sample names (`1,2,3`) cannot be told from data and is refused with a message |
 | STAR | `*ReadsPerGene.out.tab`, one per sample | column 3 or 4 when it holds >= 3x the other (stranded), else column 2 (unstranded); noted |
 | RSEM | `*.genes.results`, one per sample | `expected_count`, rounded |
 | two-column | one file per sample, gene and count (htseq-count; Discover 427's `*_Genes_ReadCount.txt`) | `__no_feature` etc. dropped |
 
 Per-sample files are named after the nearest `sam-`/`pool-` folder above them (SPARC layout),
 else after the file name without its tool suffix. Non-integer counts are rounded (as tximport
-does for estimated counts), and the rounding is noted. Only genes present in every sample's
-file are kept.
+does for estimated counts), and the rounding is noted; but a non-integer table whose columns
+each sum to a million (TPM, CPM) or whose name or columns say TPM/FPKM/RPKM/CPM/normalised is
+**refused** (exit 1): DESeq2 on normalised values gives wrong dispersions and p-values, and
+there is no way to recover the counts. Only genes present in every sample's file are kept.
+Files are found with the shared `processor/safe_inputs.py` walker (links that leave the input
+are skipped) and read capped: 200 MB per table (uncompressed for `.gz`), 50 MB per sheet, and an
+`.xlsx` only when its members unpack to < 400 MB. A file that cannot be parsed is skipped with
+its reason in `de.json`; when nothing usable is left, the run exits 1 with the reasons.
 
 **Sample metadata.** Any CSV/TSV/XLSX that is not the count table can describe the samples.
 Column names become snake_case (`OA grade` -> `oa_grade`). The sheet and column whose values name
@@ -75,13 +81,15 @@ written to the outputs**, so clinical fields in a sheet never spread.
 | `GENE_SETS` | string | `hallmark,go-bp` | `hallmark`, `go-bp`, both, or `none`. |
 | `ORGANISM` | string | `auto` | `human`, `mouse`, `rat`, or `auto`: the sheet's `species`/`organism` column, else the Ensembl prefix (`ENSG`, `ENSMUSG`, `ENSRNOG`), else symbol case (upper = human, else mouse; **symbols cannot tell rat from mouse: set `rat`**). |
 | `SEED` | integer | `42` | GSEA permutations. |
-| `THREADS` | integer | `0` | PyDESeq2, GSEA, BLAS threads; `0` = the cgroup CPU quota (2 on Lambda). |
+| `THREADS` | integer | `0` | PyDESeq2, GSEA, BLAS threads; `0` = the cgroup CPU quota, else the CPUs available (about 2 on a 3008 MB Lambda). |
 
 Samples without a value for every DESIGN term are left out (logged, listed in `design.json`).
-Exit codes: `0` success; `1` no count table, fewer than 3 usable samples, < 10 genes pass the
+Exit codes: `0` success; `1` no usable count table (the reasons are logged),
+normalised values instead of counts, fewer than 3 usable samples, < 10 genes pass the
 filter, or the DESIGN columns are missing because no sheet matched; `2` bad parameters (formula,
 contrast, reference level, a DESIGN column not in the sheet, a term with one level, a design not
-of full rank, e.g. `~ sex + group` when the group already holds the sex).
+of full rank, e.g. `~ sex + group` when the group already holds the sex; two contrasts with the
+same file name).
 
 ## Outputs (`OUTPUT_DIR/<LABEL>/`)
 
@@ -90,7 +98,7 @@ of full rank, e.g. `~ sex + group` when the group already holds the sex).
 | File | Content |
 |---|---|
 | `<contrast>.csv` | One row per tested gene, by p-value: `gene_id`, `gene_name`, `base_mean` (mean normalised count), `log2_fold_change` (MLE), `lfc_se`, `stat` (Wald), `pvalue`, `padj` (BH after independent filtering; empty when filtered or a Cook's outlier), `log2_fold_change_shrunk` (when available) |
-| `<contrast>_gsea.csv` | Preranked GSEA by `stat`: `collection`, `term`, `size` (genes of the set in the ranking), `es`, `nes`, `pvalue`, `fdr`, `n_leading_edge`, `leading_edge` (`;`-separated MSigDB symbols) |
+| `<contrast>_gsea.csv` | Preranked GSEA by `stat`: `collection`, `term`, `size` (genes of the set in the ranking), `es`, `nes`, `pvalue`, `fdr`, `n_leading_edge`, `leading_edge` (`;`-separated MSigDB symbols). With 1,000 permutations a `pvalue` of 0 means < 1/1001 (bulk-report shows it so). |
 | `<contrast>_volcano.png`, `<contrast>_ma.png` | log2 FC vs -log10 p (top 12 named); MA with the shrunk LFC when present |
 | `pca.csv`, `pca.png` | Design columns and PC1..PCk of the VST (blind) of the 500 most variable genes; variance explained in `summary.json` |
 | `samples.csv` | `sample_id`, design columns, `library_size`, `n_genes_detected`, `size_factor`, `used` |
@@ -128,7 +136,8 @@ Following Love et al. 2015 (RNA-seq workflow) and Conesa et al. 2016 (best pract
 
 **Deviations from the reference workflow and why.** No interaction terms or continuous
 covariates (keeps one clear path; covers the designs of the first users). The PCA uses
-PyDESeq2's VST rather than `rlog` (equivalent for > 30 samples, faster). GSEApy is called
+PyDESeq2's VST, chosen for speed; DESeq2's authors suggest `rlog` instead when there are fewer
+than 30 samples (it handles differences in size factors better), which PyDESeq2 does not offer. GSEApy is called
 through its Rust core (`gseapy.gse.prerank_rs`) rather than `gseapy.prerank`, which keeps every
 gene set's running-sum vector as Python lists (3.4 GB for GO:BP on 13 k genes; 1.2 GB this
 way): same algorithm, same results up to permutation noise (|ΔNES| <= 0.07 on Discover 427).
@@ -151,8 +160,12 @@ versioned Ensembl ids, separate `sample_info.xlsx` with `Sample ID`, `Tissue`, `
 of GSEA, PC1 = tissue, `Age` never in the outputs); a second factor and a reversed reference;
 the SPARC pool layout (htseq files in `pool-*` folders, `samples.xlsx` with two animals per
 pool joined to `subjects.xlsx`); the `condition` fallback; a user sheet with a missing value;
-featureCounts, STAR (strandedness), RSEM, rnaseq-quant precedence; negative counts; a symlink
-leaving the input; bad parameters; and the Lambda handler.
+featureCounts (one table, and one file per sample), STAR (strandedness), RSEM, rnaseq-quant
+precedence; an R `write.table` header one cell short; a title row above numeric sample names
+(refused); a TPM table (refused); negative counts; the `.xlsx` unpacked-size cap; a symlink
+leaving the input; GSEApy's Rust core against `gseapy.prerank` (same ES and set sizes, NES
+within permutation noise) and its pinned signature; contrast file-name collisions; bad
+parameters; and the Lambda handler.
 
 ## Runtime
 
@@ -166,8 +179,8 @@ emulation), peak RSS from `getrusage`, cgroup `memory.peak` (includes page cache
 
 | Data | Design | Wall time (PyDESeq2 / GSEA) | Peak RSS | cgroup peak |
 |---|---|---|---|---|
-| Discover 427, authors' counts: 12 libraries x 22,609 genes (13,338 tested), 2 contrasts, Hallmark + GO:BP | `~ sex + condition` | 202 s (54 s / 143 s) | 2,369 MB | 2,803 MB |
-| Discover 457, deposited XLSX: 48 samples x 23,451 genes (16,631 tested), 1 contrast, Hallmark + GO:BP | `~ study + group` | 158 s (60 s / 84 s) | 2,248 MB | 2,441 MB |
+| Discover 427, authors' counts: 12 libraries x 22,609 genes (13,338 tested), 2 contrasts, Hallmark + GO:BP | `~ sex + condition` | 181 s (47 s / 131 s) | 2,119 MB | 2,651 MB |
+| Discover 457, deposited XLSX: 48 samples x 23,451 genes (16,631 tested), 1 contrast, Hallmark + GO:BP | `~ study + group` | 143 s (51 s / 80 s) | 2,301 MB | 2,730 MB |
 | Discover 427, same without GSEA (native arm64, SPARC sheets only) | `~ subject_experimental_group` | 18 s | 346 MB | |
 | Synthetic RE-JOIN-shaped fixture: 12 x 400 | `~ donor + tissue` | 3 s | 270 MB | |
 
@@ -199,9 +212,10 @@ itself (`pool_id`) and `~ subject_experimental_group` works too. Outputs:
 - `sex:M:F`: **30 up and 652 down in males**. Besides the expected Y genes (Ddx3y, Eif2s3y, Uty,
   Kdm5d) and Xist/Tsix, the female-higher genes are immune-cell markers: C1qa (log2 FC -2.8,
   padj 5e-4), C1qc, C1qb, Lyz2, Cd68, Fcer1g, Tyrobp, S100a8 (Csf1r -2.0, padj 0.15).
-  **This matches the paper** (Ibrahim et al. 2023): "Naïve female neurons innervating the tongue
-  expressed immune cell markers such as Csf1R, C1qa and others, that weren't expressed in
-  males". The paper also reports that "very few differentially expressed genes (DEGs)
+  **This matches the paper** (Ibrahim et al. 2023), which names Csf1r and C1qa: "Naïve female
+  neurons innervating the tongue expressed immune cell markers such as Csf1R, C1qa and others,
+  that weren't expressed in males" (the other genes listed here are our finding, not the
+  paper's). The paper also reports that "very few differentially expressed genes (DEGs)
   overlapped between the sexes" upon tumour growth; an additive model, which estimates one
   tumour effect shared by both sexes, is then expected to find little, as here. For the
   sex-specific tumour response, run once per sex (a sheet listing only those libraries).
@@ -210,14 +224,14 @@ itself (`pool_id`) and `~ subject_experimental_group` works too. Outputs:
   pooled neurons.
 
 **From rnaseq-quant** (salmon on reads subsampled to 1 M per library, GENCODE M39;
-`data/work/tg-tumour/quant/counts/`, output `data/work/tg-tumour/de-quant/de/condition/`): 9,231
+`data/work/tg-tumour/quant/counts/` at the time, since replaced by the rnaseq-quant builder's full-depth runs; output `data/work/tg-tumour/de-quant/de/condition/`): 9,231
 genes pass the filter (vs 13,338 at full depth); `sex:M:F` 28 up / 68 down, 45 of them among the
 682 found from the authors' counts; Wald statistics correlate with the authors'-count run at
 Spearman 0.78 (sex) and 0.49 (condition) over 7,752 shared genes. `condition:T:N`: 1 gene. The
 loss is depth (1 M vs ~20 M reads), not method.
 
 **Discover 457** (Newton MD et al., osteoarthritis synovium meta-analysis, doi:10.26275/robc-8zol,
-CC BY 4.0), the shape RE-JOIN's knee data take: `primary/RawCounts-Bulk-RNAseq.xlsx` is a
+CC BY 4.0; described by Newton et al. 2026, *Osteoarthritis Cartilage*), the shape RE-JOIN's knee data take: `primary/RawCounts-Bulk-RNAseq.xlsx` is a
 deposited genes x samples workbook with a study banner row above the header, Entrez ids + symbols,
 `Description/Chr/Start/End/Strand/Length` columns, and a sample column named twice
 (`sub-GSE89408-healthy8`; the second copy is ignored, noted). Sample columns are SPARC subject
@@ -271,7 +285,8 @@ The gene sets are MSigDB 2026.2 Hallmark and GO:BP, **CC BY 4.0** (MSigDB licenc
   Chen and Shivani B. Ruparel (RE-JOIN; CC BY 4.0), described by Ibrahim et al. 2023; the
   authors' per-library gene counts were used. Discover dataset 457 by Michael D. Newton, Hannah
   Swahn, Dana Orange, Joseph B. Lesnak, Theodore J. Price, Anne-Marie Malfait, Rachel E. Miller,
-  Martin K. Lotz and Tristan Maerz (CC BY 4.0) was used as a real-world deposited count workbook.
+  Martin K. Lotz and Tristan Maerz (CC BY 4.0), described by Newton et al. 2026 with the RE-JOIN
+  Consortium Investigators, was used as a real-world deposited count workbook.
 
 ## Citations
 
@@ -322,4 +337,9 @@ genomic profile of lingual sensory neurons in naive and tongue-tumor bearing mic
 
 Test data: Newton MD, Swahn H, Orange D, Lesnak JB, Price TJ, Malfait AM, Miller RE, Lotz MK,
 Maerz T. Cross-platform transcriptomic data integration of human osteoarthritis synovium. SPARC
-Portal (2025). doi:10.26275/robc-8zol. CC BY 4.0. (DataCite and the Discover API)
+Portal (2025). doi:10.26275/robc-8zol. CC BY 4.0. (DataCite and the Discover API) Described by
+Newton MD, Swahn H, Orange DE, Lesnak JB, Price TJ, Malfait AM, Miller RE, Lotz MK, Maerz T.
+Cross-platform transcriptomic data integration identifies an overactive neuro-immune signature
+in human osteoarthritis synovium. *Osteoarthritis Cartilage* 34(4):589-600 (2026).
+doi:10.1016/j.joca.2025.08.013. PMID 40889615. (Crossref lists the 9 authors; PubMed also lists
+"RE-JOIN Consortium Investigators" as a group author.)
