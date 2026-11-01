@@ -8,6 +8,11 @@ abstract: Differential expression between groups of bulk RNA-seq samples with Py
   count tables (featureCounts, RSEM, htseq-count, STAR, genes x samples CSV/TSV/XLSX) with a sample sheet or SPARC metadata.
 authors:
 - name: Pennsieve (University of Pennsylvania)
+contact:
+- given-names: Joost
+  family-names: Wagenaar
+  orcid: https://orcid.org/0009-0004-5925-5451
+  affiliation: University of Pennsylvania
 repository-code: https://github.com/pennsieve-apps/MSigDB Hallmark and GO:BP gene sets (H, MH, C5 GO:BP, M5 GO:BP) and chip
   files
 license: Apache-2.0
