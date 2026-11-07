@@ -87,7 +87,7 @@ def test_rejoin_tables(fx, tmp_path, monkeypatch):
     assert all(set(x) <= {"doi", "pmid", "text"} and x["doi"] and x["text"] for x in prov["citations"])
     for k in ("app", "version", "tools", "parameters", "inputs", "started", "finished", "samples", "peak_rss_mb"):
         assert k in prov
-    assert prov["app"] == "bulk-de" and prov["version"] == "0.1.0" and prov["tools"]["pydeseq2"]
+    assert prov["app"] == "bulk-de" and prov["version"] == "0.1.1" and prov["tools"]["pydeseq2"]
     # clinical columns of the sheet (Age) never reach the outputs
     assert "age" not in pd.read_csv(out / "samples.csv").columns
 

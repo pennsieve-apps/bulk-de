@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: If you use this app, please cite it and the works it builds on, listed under references.
 type: software
-title: MSigDB Hallmark and GO:BP gene sets (H, MH, C5 GO:BP, M5 GO:BP) and chip files
+title: Bulk RNA-seq Differential Expression
 abstract: Differential expression between groups of bulk RNA-seq samples with PyDESeq2 (DESeq2's negative binomial model)
   for an additive design of sample-sheet columns, with shrunk fold changes, a PCA of variance-stabilised counts, volcano and
   MA plots, and preranked GSEA on MSigDB Hallmark and GO biological process gene sets. Reads rnaseq-quant output or deposited
@@ -13,10 +13,9 @@ contact:
   family-names: Wagenaar
   orcid: https://orcid.org/0009-0004-5925-5451
   affiliation: University of Pennsylvania
-repository-code: https://github.com/pennsieve-apps/MSigDB Hallmark and GO:BP gene sets (H, MH, C5 GO:BP, M5 GO:BP) and chip
-  files
+repository-code: https://github.com/pennsieve-apps/bulk-de
 license: Apache-2.0
-version: 0.1.0
+version: 0.1.1
 keywords:
 - bulk-rna-seq
 - transcriptomics
