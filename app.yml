@@ -20,9 +20,6 @@ application:
     - differential-expression
     - gene-set-enrichment
     - statistics
-    - neuroscience
-    - pain
-    - musculoskeletal
 runtime:
   cpu: 2048
   # Light step: runs as a container (standard) or as a Lambda function (the image serves both,
